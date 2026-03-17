@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { OptimizeSmallWorldResponse } from "../types.ts";
 
 type ResultPanelProps = {
@@ -5,6 +6,8 @@ type ResultPanelProps = {
 };
 
 export function ResultPanel({ result }: ResultPanelProps) {
+  const { t } = useTranslation();
+
   if (!result) return null;
 
   const scoreDiff =
@@ -15,32 +18,32 @@ export function ResultPanel({ result }: ResultPanelProps) {
 
   return (
     <div className="result-panel">
-      <h3>최적화 결과</h3>
+      <h3>{t("resultPanel.title")}</h3>
       <div className="score-cards">
         <div className="card">
-          <span className="label">Optimized Graph Score</span>
+          <span className="label">{t("resultPanel.optimizedScore")}</span>
           <span className="value">{result.optimized_graph_score}</span>
           {result.optimized_graph_score === -1 && (
             <p className="unreachable-node-notice">
-              (도달할 수 없는 노드 존재)
+              {t("resultPanel.unreachableNode")}
             </p>
           )}
         </div>
         <div className="card">
-          <span className="label">Bidirectional Graph Score</span>
+          <span className="label">{t("resultPanel.bidirectionalScore")}</span>
           <span className="value">{result.bidirectional_graph_score}</span>
           {result.bidirectional_graph_score === -1 && (
             <p className="unreachable-node-notice">
-              (도달할 수 없는 노드 존재)
+              {t("resultPanel.unreachableNode")}
             </p>
           )}
         </div>
         <div className="card highlight">
-          <span className="label">점수 차이</span>
+          <span className="label">{t("resultPanel.scoreDiff")}</span>
           <span className="value">{scoreDiff}</span>
         </div>
         <div className="card">
-          <span className="label">최적화된 방향 간선 개수</span>
+          <span className="label">{t("resultPanel.directedEdgeCount")}</span>
           <span className="value">{result.edges.length}</span>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { OptimizeSmallWorldRequest } from "../types.ts";
 import type { OptimizeSmallWorldResponse } from "../types.ts";
 
@@ -8,6 +9,7 @@ type DebugPanelProps = {
 };
 
 export function DebugPanel({ request, response }: DebugPanelProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
     <div className="debug-panel">
@@ -16,7 +18,7 @@ export function DebugPanel({ request, response }: DebugPanelProps) {
         className="debug-toggle"
         onClick={() => setOpen((o) => !o)}
       >
-        {open ? "▼ 디버깅 접기" : "▶ 디버깅 보기 (Request/Response)"}
+        {open ? t("debugPanel.hide") : t("debugPanel.show")}
       </button>
       {open && (
         <div className="debug-content">

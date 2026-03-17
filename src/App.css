@@ -46,6 +46,29 @@ header p {
   background: var(--bg-tertiary);
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.language-select {
+  height: 44px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.language-select:hover {
+  background: var(--bg-tertiary);
+}
+
 .layout {
   display: flex;
   gap: 1.5rem;

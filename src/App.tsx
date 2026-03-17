@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { GraphInput } from "./components/GraphInput.tsx";
 import { GraphVisualization } from "./components/GraphVisualization.tsx";
 import { ResultPanel } from "./components/ResultPanel.tsx";
@@ -12,7 +13,10 @@ import type {
 } from "./types.ts";
 import "./App.css";
 
+type Language = "ko" | "en" | "ja";
+
 export default function App() {
+  const { t, i18n } = useTranslation();
   const [verticesRaw, setVerticesRaw] = useState("1,2,3,4,5");
   const [edgesRaw, setEdgesRaw] = useState("1 2\n2 3\n3 4\n4 5\n5 1");
   const [parsedGraph, setParsedGraph] = useState<ParsedGraph | null>(null);
@@ -39,23 +43,30 @@ export default function App() {
     setTheme((t) => (t === "light" ? "dark" : "light"));
   }, []);
 
+  const handleLanguageChange = useCallback(
+    (lng: Language) => {
+      void i18n.changeLanguage(lng);
+    },
+    [i18n]
+  );
+
   const handleDrawGraph = useCallback(() => {
     const result = validateAndParse(verticesRaw, edgesRaw);
     if (!result.valid) {
-      setError(result.error);
+      setError(t(result.error.key, result.error));
       return;
     }
     setError(null);
     setParsedGraph(result.graph);
     setOptimizationResult(null);
     setHasDrawn(true);
-  }, [verticesRaw, edgesRaw]);
+  }, [verticesRaw, edgesRaw, t]);
 
   const handleOptimize = useCallback(async () => {
     if (!parsedGraph) return;
     const result = validateAndParse(verticesRaw, edgesRaw);
     if (!result.valid) {
-      setError(result.error);
+      setError(t(result.error.key, result.error));
       return;
     }
     setError(null);
@@ -71,26 +82,20 @@ export default function App() {
       setOptimizationResult(res);
     } catch (err) {
       const msg =
-        err instanceof Error
-          ? err.message
-          : "알 수 없는 오류가 발생했습니다.";
+        err instanceof Error ? err.message : t("errors.unknown");
       if (
         msg.includes("fetch") ||
         msg.includes("Failed to fetch") ||
         msg.includes("NetworkError")
       ) {
-        setError(
-          "CORS 또는 네트워크 오류: 서버에 연결할 수 없습니다. " +
-            "브라우저 개발자 도구(F12) > Network 탭에서 요청 상태를 확인해보세요. " +
-            "서버가 CORS를 허용하는지 확인이 필요합니다."
-        );
+        setError(t("errors.cors"));
       } else {
         setError(msg);
       }
     } finally {
       setLoading(false);
     }
-  }, [parsedGraph, verticesRaw, edgesRaw, apiTarget]);
+  }, [parsedGraph, verticesRaw, edgesRaw, apiTarget, t]);
 
   const handleVerticesChange = useCallback((v: string) => {
     setVerticesRaw(v);
@@ -126,23 +131,45 @@ export default function App() {
       }
     : null;
 
+  const currentLanguage = (i18n.language as Language) ?? "ko";
+
   return (
     <div className="app">
       <header>
         <div className="header-row">
           <div>
-            <h1>Metropolitan Ring Road System</h1>
-            <p>무방향 그래프를 입력하고 경로 탐색으로 최적화된 방향을 확인하세요.</p>
+            <h1>{t("header.title")}</h1>
+            <p>{t("header.subtitle")}</p>
           </div>
-          <button
-            type="button"
-            className="theme-toggle"
-            onClick={toggleTheme}
-            title={theme === "light" ? "다크 모드로 전환" : "라이트 모드로 전환"}
-            aria-label={theme === "light" ? "다크 모드" : "라이트 모드"}
-          >
-            {theme === "light" ? "🌙" : "☀️"}
-          </button>
+          <div className="header-controls">
+            <select
+              className="language-select"
+              value={currentLanguage}
+              onChange={(e) => handleLanguageChange(e.target.value as Language)}
+              aria-label={t("language")}
+            >
+              <option value="ko">한국어</option>
+              <option value="en">English</option>
+              <option value="ja">日本語</option>
+            </select>
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={toggleTheme}
+              title={
+                theme === "light"
+                  ? t("header.switchToDark")
+                  : t("header.switchToLight")
+              }
+              aria-label={
+                theme === "light"
+                  ? t("header.darkMode")
+                  : t("header.lightMode")
+              }
+            >
+              {theme === "light" ? "🌙" : "☀️"}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -162,9 +189,7 @@ export default function App() {
             apiTarget={apiTarget}
             onApiTargetChange={handleApiTargetChange}
           />
-          {loading && (
-            <div className="loading">최적화 중...</div>
-          )}
+          {loading && <div className="loading">{t("loading")}</div>}
           <ResultPanel result={optimizationResult} />
         </aside>
 

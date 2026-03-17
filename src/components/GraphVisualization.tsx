@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ReactFlow,
   Background,
@@ -199,6 +200,7 @@ export function GraphVisualization({
   directedEdges,
   hasDrawn,
 }: GraphVisualizationProps) {
+  const { t } = useTranslation();
   const { nodes: initialNodes, edges: initialEdges } = parsedGraph
     ? buildNodesAndEdges(parsedGraph, directedEdges, null)
     : { nodes: [], edges: [] };
@@ -223,7 +225,7 @@ export function GraphVisualization({
   if (!hasDrawn) {
     return (
       <div className="graph-placeholder">
-        <p>그래프를 입력하고 &quot;그래프 그리기&quot; 버튼을 눌러주세요.</p>
+        <p>{t("graphVisualization.placeholder")}</p>
       </div>
     );
   }

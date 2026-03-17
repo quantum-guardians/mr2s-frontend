@@ -1,4 +1,5 @@
 import type { ChangeEvent } from "react";
+import { useTranslation } from "react-i18next";
 import type { ApiTarget } from "../types.ts";
 
 type GraphInputProps = {
@@ -30,12 +31,13 @@ export function GraphInput({
   apiTarget,
   onApiTargetChange,
 }: GraphInputProps) {
+  const { t } = useTranslation();
   return (
     <div className="graph-input">
-      <h3>그래프 입력</h3>
+      <h3>{t("graphInput.title")}</h3>
 
       <div className="field">
-        <label>API 선택</label>
+        <label>{t("graphInput.apiSelection")}</label>
         <div className="api-toggle">
           <label>
             <input
@@ -61,7 +63,7 @@ export function GraphInput({
       </div>
 
       <div className="field">
-        <label htmlFor="vertices">정점 (쉼표로 구분)</label>
+        <label htmlFor="vertices">{t("graphInput.vertices")}</label>
         <input
           id="vertices"
           type="text"
@@ -69,19 +71,19 @@ export function GraphInput({
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             onVerticesChange(e.target.value)
           }
-          placeholder="예: 1,2,3,4,5"
+          placeholder={t("graphInput.verticesPlaceholder")}
         />
       </div>
 
       <div className="field">
-        <label htmlFor="edges">간선 (한 줄에 하나씩, 띄어쓰기 또는 쉼표)</label>
+        <label htmlFor="edges">{t("graphInput.edges")}</label>
         <textarea
           id="edges"
           value={edgesRaw}
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
             onEdgesChange(e.target.value)
           }
-          placeholder={"예:\n1 2\n2 3\n3 4"}
+          placeholder={t("graphInput.edgesPlaceholder")}
           rows={5}
         />
       </div>
@@ -94,17 +96,17 @@ export function GraphInput({
           onClick={onDrawGraph}
           disabled={!canDraw}
         >
-          그래프 그리기
+          {t("graphInput.drawGraph")}
         </button>
         <button
           className="btn-primary"
           onClick={onOptimize}
           disabled={!canOptimize}
         >
-          경로 탐색
+          {t("graphInput.pathSearch")}
         </button>
         <button className="btn-secondary" onClick={onReset} type="button">
-          초기화
+          {t("graphInput.reset")}
         </button>
       </div>
     </div>
