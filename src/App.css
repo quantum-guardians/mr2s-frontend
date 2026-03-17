@@ -233,6 +233,13 @@ header p {
   color: var(--text);
 }
 
+.result-panel .card .unreachable-node-notice {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin: 0.25rem 0 0;
+}
+
 /* Graph Visualization */
 .graph-placeholder {
   height: 500px;
