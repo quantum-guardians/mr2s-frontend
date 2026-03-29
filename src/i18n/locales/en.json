@@ -16,7 +16,8 @@
     "edgesPlaceholder": "e.g.:\n1 2\n2 3\n3 4",
     "drawGraph": "Draw Graph",
     "pathSearch": "Path Search",
-    "reset": "Reset"
+    "reset": "Reset",
+    "runBenchmark": "Run Benchmark"
   },
   "resultPanel": {
     "title": "Optimization Result",
@@ -47,5 +48,14 @@
     "unknown": "An unknown error occurred.",
     "cors": "CORS or network error: Unable to connect to the server. Check the request status in the browser developer tools (F12) > Network tab. The server may need to allow CORS."
   },
-  "language": "Language"
+  "language": "Language",
+  "benchmarkPanel": {
+    "title": "Model Performance Comparison",
+    "running": "Running benchmark... (10 runs per model)",
+    "approach": "Model",
+    "max": "Max Score",
+    "min": "Min Score",
+    "average": "Average Score",
+    "failures": "Failures"
+  }
 }
