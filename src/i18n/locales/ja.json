@@ -16,7 +16,8 @@
     "edgesPlaceholder": "例:\n1 2\n2 3\n3 4",
     "drawGraph": "グラフを描画",
     "pathSearch": "パス探索",
-    "reset": "リセット"
+    "reset": "リセット",
+    "runBenchmark": "ベンチマーク実行"
   },
   "resultPanel": {
     "title": "最適化結果",
@@ -47,5 +48,15 @@
     "unknown": "不明なエラーが発生しました。",
     "cors": "CORSまたはネットワークエラー: サーバーに接続できません。ブラウザの開発者ツール（F12）> ネットワークタブでリクエストの状態を確認してください。サーバーがCORSを許可しているか確認が必要です。"
   },
-  "language": "言語"
+  "language": "言語",
+  "benchmarkPanel": {
+    "title": "モデル性能比較",
+    "running": "ベンチマーク実行中... （各モデル10回）",
+    "approach": "モデル",
+    "max": "最大スコア",
+    "min": "最小スコア",
+    "average": "平均スコア",
+    "averageTime": "平均所要時間 (ms)",
+    "failures": "失敗回数"
+  }
 }

@@ -4,12 +4,14 @@ import { GraphInput } from "./components/GraphInput.tsx";
 import { GraphVisualization } from "./components/GraphVisualization.tsx";
 import { ResultPanel } from "./components/ResultPanel.tsx";
 import { DebugPanel } from "./components/DebugPanel.tsx";
+import { BenchmarkPanel } from "./components/BenchmarkPanel.tsx";
 import { validateAndParse } from "./utils/validation.ts";
-import { optimizeSmallWorld } from "./api.ts";
+import { optimizeSmallWorld, runBenchmark } from "./api.ts";
 import type {
   ParsedGraph,
   OptimizeSmallWorldResponse,
   ApiTarget,
+  BenchmarkResult,
 } from "./types.ts";
 import "./App.css";
 
@@ -26,6 +28,9 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [hasDrawn, setHasDrawn] = useState(false);
   const [apiTarget, setApiTarget] = useState<ApiTarget>("small-world");
+  const [benchmarkResult, setBenchmarkResult] =
+    useState<BenchmarkResult | null>(null);
+  const [benchmarkLoading, setBenchmarkLoading] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
       const attr = document.documentElement.getAttribute("data-theme");
@@ -112,6 +117,21 @@ export default function App() {
     setError(null);
   }, []);
 
+  const handleBenchmark = useCallback(async () => {
+    setBenchmarkLoading(true);
+    setBenchmarkResult(null);
+    try {
+      const result = await runBenchmark();
+      setBenchmarkResult(result);
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : t("errors.unknown");
+      setError(msg);
+    } finally {
+      setBenchmarkLoading(false);
+    }
+  }, [t]);
+
   const handleReset = useCallback(() => {
     setVerticesRaw("1,2,3,4,5");
     setEdgesRaw("1 2\n2 3\n3 4\n4 5\n5 1");
@@ -183,14 +203,17 @@ export default function App() {
             onDrawGraph={handleDrawGraph}
             onOptimize={handleOptimize}
             onReset={handleReset}
+            onBenchmark={handleBenchmark}
             canDraw={canDraw}
             canOptimize={canOptimize}
+            benchmarkLoading={benchmarkLoading}
             error={error}
             apiTarget={apiTarget}
             onApiTargetChange={handleApiTargetChange}
           />
           {loading && <div className="loading">{t("loading")}</div>}
           <ResultPanel result={optimizationResult} />
+          <BenchmarkPanel result={benchmarkResult} loading={benchmarkLoading} />
         </aside>
 
         <main className="main">

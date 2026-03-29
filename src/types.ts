@@ -23,3 +23,18 @@ export type ParsedGraph = {
 };
 
 export type ApiTarget = "small-world" | "naoto";
+
+/** Sentinel value returned by the API when a node is unreachable. */
+export const UNREACHABLE_SCORE = -1;
+
+export type BenchmarkStats = {
+  max: number;
+  min: number;
+  average: number;
+  averageTimeMs: number;
+  failureCount: number;
+};
+
+export type BenchmarkResult = {
+  [key in ApiTarget]: BenchmarkStats;
+};

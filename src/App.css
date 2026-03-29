@@ -196,6 +196,22 @@ header p {
   background: var(--btn-secondary-hover);
 }
 
+.graph-input .buttons .btn-benchmark {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--btn-secondary-border);
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  background: var(--bg-tertiary);
+  color: var(--text);
+  margin-top: 0.25rem;
+}
+
+.graph-input .buttons .btn-benchmark:hover:not(:disabled) {
+  background: var(--btn-secondary-hover);
+}
+
 .graph-input button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -377,4 +393,53 @@ header p {
   .debug-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Benchmark Panel */
+.benchmark-panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.benchmark-panel h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.benchmark-loading {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.benchmark-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.benchmark-table th,
+.benchmark-table td {
+  padding: 0.4rem 0.5rem;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.benchmark-table th {
+  background: var(--bg-tertiary);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.benchmark-table td {
+  color: var(--text);
+  background: var(--card-bg);
+}
+
+.benchmark-table td:first-child {
+  font-weight: 500;
+  text-align: left;
 }

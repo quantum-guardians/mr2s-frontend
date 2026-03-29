@@ -10,8 +10,10 @@ type GraphInputProps = {
   onDrawGraph: () => void;
   onOptimize: () => void;
   onReset: () => void;
+  onBenchmark: () => void;
   canDraw: boolean;
   canOptimize: boolean;
+  benchmarkLoading: boolean;
   error: string | null;
   apiTarget: ApiTarget;
   onApiTargetChange: (target: ApiTarget) => void;
@@ -25,8 +27,10 @@ export function GraphInput({
   onDrawGraph,
   onOptimize,
   onReset,
+  onBenchmark,
   canDraw,
   canOptimize,
+  benchmarkLoading,
   error,
   apiTarget,
   onApiTargetChange,
@@ -107,6 +111,14 @@ export function GraphInput({
         </button>
         <button className="btn-secondary" onClick={onReset} type="button">
           {t("graphInput.reset")}
+        </button>
+        <button
+          className="btn-benchmark"
+          onClick={onBenchmark}
+          disabled={benchmarkLoading}
+          type="button"
+        >
+          {t("graphInput.runBenchmark")}
         </button>
       </div>
     </div>
