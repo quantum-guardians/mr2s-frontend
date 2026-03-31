@@ -20,7 +20,7 @@ export type OptimizeSmallWorldResponse = {
   bidirectional_graph_score: number;
 };
 
-// 파싱된 그래프
+// 파싱된 그래프 — weights[i]는 간선 edges[i]의 가중치, 정수 1~10
 export type ParsedGraph = {
   vertices: number[];
   edges: [number, number][];

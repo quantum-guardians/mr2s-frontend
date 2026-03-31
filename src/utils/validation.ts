@@ -1,4 +1,9 @@
 import type { ParsedGraph } from "../types.ts";
+import {
+  EDGE_WEIGHT_MIN,
+  EDGE_WEIGHT_MAX,
+  clampEdgeWeight,
+} from "./edgeWeight.ts";
 
 export type ValidationErrorKey =
   | { key: "validation.verticesEmpty" }
@@ -7,7 +12,14 @@ export type ValidationErrorKey =
   | { key: "validation.invalidEdgeFormat"; line: number; value: string }
   | { key: "validation.invalidEdgeValue"; line: number; value: string }
   | { key: "validation.selfLoop"; line: number; u: number; v: number }
-  | { key: "validation.vertexNotFound"; vertex: number; line: number };
+  | { key: "validation.vertexNotFound"; vertex: number; line: number }
+  | {
+      key: "validation.weightOutOfRange";
+      line: number;
+      value: string;
+      min: number;
+      max: number;
+    };
 
 export type ValidationResult =
   | { valid: true; graph: ParsedGraph }
@@ -66,14 +78,27 @@ function parseEdges(
         error: { key: "validation.invalidEdgeValue", line: i + 1, value: line },
       };
     }
-    let w = defaultWeight;
+    let w = clampEdgeWeight(defaultWeight);
     if (parts.length === 3) {
-      w = parseFloat(parts[2]);
-      if (isNaN(w)) {
+      const ws = parts[2].trim();
+      const wNum = Number(ws);
+      if (
+        !Number.isFinite(wNum) ||
+        !Number.isInteger(wNum) ||
+        wNum < EDGE_WEIGHT_MIN ||
+        wNum > EDGE_WEIGHT_MAX
+      ) {
         return {
-          error: { key: "validation.invalidEdgeValue", line: i + 1, value: line },
+          error: {
+            key: "validation.weightOutOfRange",
+            line: i + 1,
+            value: line,
+            min: EDGE_WEIGHT_MIN,
+            max: EDGE_WEIGHT_MAX,
+          },
         };
       }
+      w = wNum;
     }
     if (u === v) {
       return {
@@ -99,8 +124,9 @@ function parseEdges(
 export function validateAndParse(
   verticesRaw: string,
   edgesRaw: string,
-  defaultWeight: number = 10
+  defaultWeight: number = EDGE_WEIGHT_MAX
 ): ValidationResult {
+  const dw = clampEdgeWeight(defaultWeight);
   const vertResult = parseVertices(verticesRaw);
   if (typeof vertResult === "object" && "error" in vertResult) {
     return { valid: false, error: vertResult.error };
@@ -108,7 +134,7 @@ export function validateAndParse(
   const vertices = vertResult as number[];
   const vertSet = new Set(vertices);
 
-  const edgeResult = parseEdges(edgesRaw, vertSet, defaultWeight);
+  const edgeResult = parseEdges(edgesRaw, vertSet, dw);
   if ("error" in edgeResult) {
     return { valid: false, error: edgeResult.error };
   }

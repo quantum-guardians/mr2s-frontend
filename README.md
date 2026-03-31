@@ -102,16 +102,16 @@ URL 패턴: `/api/{VERSION}/optimize/{METHOD}`
 ```json
 {
   "edges": [
-    { "vertices": [1, 2], "weight": 10 },
-    { "vertices": [2, 3], "weight": 10 },
-    { "vertices": [3, 4], "weight": 15 },
-    { "vertices": [4, 5], "weight": 10 },
-    { "vertices": [5, 1], "weight": 10 }
+    { "vertices": [1, 2], "weight": 3 },
+    { "vertices": [2, 3], "weight": 7 },
+    { "vertices": [3, 4], "weight": 10 },
+    { "vertices": [4, 5], "weight": 2 },
+    { "vertices": [5, 1], "weight": 5 }
   ]
 }
 ```
 
-각 간선은 `vertices` (두 정점)와 `weight` (가중치)로 구성됩니다. UI에서 간선별 가중치를 지정하지 않으면 기본 가중치(default: 10)가 적용됩니다.
+각 간선은 `vertices` (두 정점)와 `weight` (**정수 1~10**)로 구성됩니다. UI·API 요청 모두 이 범위로 맞춥니다. 미지정 시 기본 가중치(기본값 10)가 적용됩니다. 시각화에서 군중 점 밀도는 weight 단계(1~10)마다 고정된 간격으로 매핑됩니다.
 
 **응답 형식**
 

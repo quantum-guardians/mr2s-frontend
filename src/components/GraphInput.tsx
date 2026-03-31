@@ -108,7 +108,8 @@ export function GraphInput({
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             onDefaultWeightChange(Number(e.target.value))
           }
-          min={0}
+          min={1}
+          max={10}
           step={1}
         />
       </div>

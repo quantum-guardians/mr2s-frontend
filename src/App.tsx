@@ -6,6 +6,7 @@ import { ResultPanel } from "./components/ResultPanel.tsx";
 import { DebugPanel } from "./components/DebugPanel.tsx";
 import { BenchmarkPanel } from "./components/BenchmarkPanel.tsx";
 import { validateAndParse } from "./utils/validation.ts";
+import { clampEdgeWeight } from "./utils/edgeWeight.ts";
 import { buildRandomMockResponse } from "./utils/devMockOptimization.ts";
 import { optimizeSmallWorld, runBenchmark, toApiRequest } from "./api.ts";
 import type {
@@ -130,7 +131,7 @@ export default function App() {
   }, [t]);
 
   const handleDefaultWeightChange = useCallback((w: number) => {
-    setDefaultWeight(w);
+    setDefaultWeight(clampEdgeWeight(w));
     setError(null);
   }, []);
 

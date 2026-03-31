@@ -6,6 +6,7 @@ import type {
   ParsedGraph,
 } from "./types.ts";
 import { UNREACHABLE_SCORE } from "./types.ts";
+import { clampEdgeWeight } from "./utils/edgeWeight.ts";
 
 // 개발/프로덕션 모두 프록시 경로 사용 (CORS 우회)
 // - 개발: Vite proxy (vite.config.ts)
@@ -17,7 +18,7 @@ export function toApiRequest(graph: ParsedGraph): OptimizeSmallWorldRequest {
   return {
     edges: graph.edges.map(([u, v], i) => ({
       vertices: [u, v] as [number, number],
-      weight: graph.weights[i],
+      weight: clampEdgeWeight(graph.weights[i]),
     })),
   };
 }
