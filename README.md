@@ -90,19 +90,28 @@ npm run preview
 
 ### API 엔드포인트
 
+URL 패턴: `/api/{VERSION}/optimize/{METHOD}`
+
 | 알고리즘 | 프록시 경로 | 실제 경로 |
 |----------|------------|-----------|
-| Small World | `/api/optimize/small-world` | `https://quantum.yunseong.dev/optimize/small-world` |
-| Naoto | `/api/optimize/naoto` | `https://quantum.yunseong.dev/optimize/naoto` |
+| Small World | `/api/v1/optimize/small-world` | `https://quantum.yunseong.dev/v1/optimize/small-world` |
+| Naoto | `/api/v1/optimize/naoto` | `https://quantum.yunseong.dev/v1/optimize/naoto` |
 
 **요청 형식**
 
 ```json
 {
-  "vertices": [1, 2, 3, 4, 5],
-  "edges": [[1, 2], [2, 3], [3, 4], [4, 5], [5, 1]]
+  "edges": [
+    { "vertices": [1, 2], "weight": 10 },
+    { "vertices": [2, 3], "weight": 10 },
+    { "vertices": [3, 4], "weight": 15 },
+    { "vertices": [4, 5], "weight": 10 },
+    { "vertices": [5, 1], "weight": 10 }
+  ]
 }
 ```
+
+각 간선은 `vertices` (두 정점)와 `weight` (가중치)로 구성됩니다. UI에서 간선별 가중치를 지정하지 않으면 기본 가중치(default: 10)가 적용됩니다.
 
 **응답 형식**
 

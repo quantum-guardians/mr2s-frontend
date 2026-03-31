@@ -1,7 +1,11 @@
-// Request DTO
+// Request DTO (v1)
+export type EdgeWithWeight = {
+  vertices: [number, number];
+  weight: number;
+};
+
 export type OptimizeSmallWorldRequest = {
-  vertices: number[];
-  edges: [number, number][];
+  edges: EdgeWithWeight[];
 };
 
 // Response DTO - "_from" 필드명 그대로 유지
@@ -20,6 +24,7 @@ export type OptimizeSmallWorldResponse = {
 export type ParsedGraph = {
   vertices: number[];
   edges: [number, number][];
+  weights: number[];
 };
 
 export type ApiTarget = "small-world" | "naoto";

@@ -34,16 +34,23 @@ function parseVertices(raw: string): number[] | { error: ValidationErrorKey } {
   return nums;
 }
 
+type ParsedEdges = {
+  edges: [number, number][];
+  weights: number[];
+};
+
 function parseEdges(
   raw: string,
-  vertices: Set<number>
-): [number, number][] | { error: ValidationErrorKey } {
+  vertices: Set<number>,
+  defaultWeight: number
+): ParsedEdges | { error: ValidationErrorKey } {
   const lines = raw.trim().split("\n").filter((l) => l.trim());
   const edges: [number, number][] = [];
+  const weights: number[] = [];
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     const parts = line.split(/[\s,]+/).filter(Boolean);
-    if (parts.length !== 2) {
+    if (parts.length < 2 || parts.length > 3) {
       return {
         error: {
           key: "validation.invalidEdgeFormat",
@@ -58,6 +65,15 @@ function parseEdges(
       return {
         error: { key: "validation.invalidEdgeValue", line: i + 1, value: line },
       };
+    }
+    let w = defaultWeight;
+    if (parts.length === 3) {
+      w = parseFloat(parts[2]);
+      if (isNaN(w)) {
+        return {
+          error: { key: "validation.invalidEdgeValue", line: i + 1, value: line },
+        };
+      }
     }
     if (u === v) {
       return {
@@ -75,13 +91,15 @@ function parseEdges(
       };
     }
     edges.push([u, v]);
+    weights.push(w);
   }
-  return edges;
+  return { edges, weights };
 }
 
 export function validateAndParse(
   verticesRaw: string,
-  edgesRaw: string
+  edgesRaw: string,
+  defaultWeight: number = 10
 ): ValidationResult {
   const vertResult = parseVertices(verticesRaw);
   if (typeof vertResult === "object" && "error" in vertResult) {
@@ -90,14 +108,13 @@ export function validateAndParse(
   const vertices = vertResult as number[];
   const vertSet = new Set(vertices);
 
-  const edgeResult = parseEdges(edgesRaw, vertSet);
-  if (typeof edgeResult === "object" && "error" in edgeResult) {
+  const edgeResult = parseEdges(edgesRaw, vertSet, defaultWeight);
+  if ("error" in edgeResult) {
     return { valid: false, error: edgeResult.error };
   }
-  const edges = edgeResult as [number, number][];
 
   return {
     valid: true,
-    graph: { vertices, edges },
+    graph: { vertices, edges: edgeResult.edges, weights: edgeResult.weights },
   };
 }

@@ -5,8 +5,10 @@ import type { ApiTarget } from "../types.ts";
 type GraphInputProps = {
   verticesRaw: string;
   edgesRaw: string;
+  defaultWeight: number;
   onVerticesChange: (v: string) => void;
   onEdgesChange: (e: string) => void;
+  onDefaultWeightChange: (w: number) => void;
   onDrawGraph: () => void;
   onOptimize: () => void;
   onReset: () => void;
@@ -22,8 +24,10 @@ type GraphInputProps = {
 export function GraphInput({
   verticesRaw,
   edgesRaw,
+  defaultWeight,
   onVerticesChange,
   onEdgesChange,
+  onDefaultWeightChange,
   onDrawGraph,
   onOptimize,
   onReset,
@@ -89,6 +93,20 @@ export function GraphInput({
           }
           placeholder={t("graphInput.edgesPlaceholder")}
           rows={5}
+        />
+      </div>
+
+      <div className="field">
+        <label htmlFor="default-weight">{t("graphInput.defaultWeight")}</label>
+        <input
+          id="default-weight"
+          type="number"
+          value={defaultWeight}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            onDefaultWeightChange(Number(e.target.value))
+          }
+          min={0}
+          step={1}
         />
       </div>
 
