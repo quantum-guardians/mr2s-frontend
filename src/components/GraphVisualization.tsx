@@ -9,12 +9,12 @@ import {
   useEdgesState,
   type Node,
   type Edge,
-  MarkerType,
 } from "@xyflow/react";
 import dagre from "@dagrejs/dagre";
 import "@xyflow/react/dist/style.css";
 import type { ParsedGraph } from "../types.ts";
 import type { OptimizedDirectedEdge } from "../types.ts";
+import { clampEdgeWeight, EDGE_WEIGHT_MAX } from "../utils/edgeWeight.ts";
 import { CircleNode } from "./CircleNode.tsx";
 
 const DEFAULT_LAYOUT = {
@@ -35,6 +35,34 @@ const NODE_HEIGHT = 40;
 const nodeTypes = { circle: CircleNode };
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+
+function findEdgeWeight(
+  graph: ParsedGraph,
+  _from: number,
+  to: number
+): number {
+  for (let i = 0; i < graph.edges.length; i++) {
+    const [u, v] = graph.edges[i];
+    if ((u === _from && v === to) || (u === to && v === _from)) {
+      return clampEdgeWeight(graph.weights[i] ?? EDGE_WEIGHT_MAX);
+    }
+  }
+  return EDGE_WEIGHT_MAX;
+}
+
+/** 군중 점(둥근 cap) 직경에 해당 — weight와 무관하게 동일 */
+const CROWD_DOT_STROKE_WIDTH = 8;
+
+/** weight 정수 1~10 각각에 고정 gap(px). 1=매우 희박, 10=매우 촘촘 (단계 간 대비 크게) */
+const CROWD_GAP_BY_WEIGHT: readonly number[] = [
+  58, 42, 30, 22, 16, 11, 7, 5, 3, 2,
+];
+
+function weightToCrowdDotPattern(weight: number): { dotSpan: number; gap: number } {
+  const level = clampEdgeWeight(weight);
+  const gap = CROWD_GAP_BY_WEIGHT[level - 1];
+  return { dotSpan: 1, gap };
+}
 
 function getHandleForDirection(
   dx: number,
@@ -150,7 +178,6 @@ function buildNodesAndEdges(
   };
 
   const edges: Edge[] = [];
-
   if (directedEdges && directedEdges.length > 0) {
     for (const [u, v] of graph.edges) {
       edges.push(
@@ -164,16 +191,29 @@ function buildNodesAndEdges(
       );
     }
     for (const e of directedEdges) {
+      const w = findEdgeWeight(graph, e._from, e.to);
+      const { dotSpan, gap } = weightToCrowdDotPattern(w);
+      const period = Math.max(1, dotSpan + gap);
+      const basePeriod = 14;
+      const durationSec = Math.min(
+        1.15,
+        Math.max(0.32, 0.5 * (period / basePeriod))
+      );
       edges.push(
         addEdgeWithHandles(`dir-${e._from}-${e.to}`, String(e._from), String(e.to), {
           type: "default",
           animated: true,
-          className: "edge-directed-animated",
-          markerEnd: { type: MarkerType.ArrowClosed, color: "#dc2626" },
+          className: "edge-directed-crowd",
+          markerEnd: undefined,
+          markerStart: undefined,
           style: {
             stroke: "#dc2626",
-            strokeWidth: 3,
-            strokeDasharray: "8 4",
+            strokeWidth: CROWD_DOT_STROKE_WIDTH,
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
+            strokeDasharray: `${dotSpan} ${gap}`,
+            ["--edge-dash-offset" as string]: String(-period),
+            ["--edge-dash-duration" as string]: `${durationSec}s`,
           },
           zIndex: 1,
         })

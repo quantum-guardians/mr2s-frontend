@@ -12,12 +12,15 @@
     "apiSelection": "API Selection",
     "vertices": "Vertices (comma-separated)",
     "verticesPlaceholder": "e.g. 1,2,3,4,5",
-    "edges": "Edges (one per line, space or comma-separated)",
-    "edgesPlaceholder": "e.g.:\n1 2\n2 3\n3 4",
+    "edges": "Edges (one per line, optional weight 1–10)",
+    "edgesPlaceholder": "e.g.:\n1 2\n2 3 8\n3 4",
+    "defaultWeight": "Default weight (1–10)",
     "drawGraph": "Draw Graph",
     "pathSearch": "Path Search",
     "reset": "Reset",
-    "runBenchmark": "Run Benchmark"
+    "runBenchmark": "Run Benchmark",
+    "devMock": "Dev: random paths",
+    "devMockTitle": "Randomize edge directions without the server to test visualization and animations."
   },
   "resultPanel": {
     "title": "Optimization Result",
@@ -39,7 +42,8 @@
     "verticesEmpty": "Vertices cannot be empty.",
     "invalidVertex": "Invalid vertex value: \"{{value}}\"",
     "duplicateVertices": "Duplicate vertices found.",
-    "invalidEdgeFormat": "Invalid edge format (line {{line}}): \"{{value}}\". Use \"u v\" or \"u,v\" format.",
+    "invalidEdgeFormat": "Invalid edge format (line {{line}}): \"{{value}}\". Use \"u v\" or \"u v w\"; w must be an integer from 1 to 10.",
+    "weightOutOfRange": "Weight must be an integer between {{min}} and {{max}} (line {{line}}): \"{{value}}\"",
     "invalidEdgeValue": "Invalid edge value (line {{line}}): \"{{value}}\"",
     "selfLoop": "Self-loop not allowed (line {{line}}): \"{{u}} {{v}}\"",
     "vertexNotFound": "Vertex {{vertex}} is not in the vertex list. (line {{line}})"

@@ -7,8 +7,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "https://quantum.yunseong.dev",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
+        changeOrigin: true
       },
     },
   },

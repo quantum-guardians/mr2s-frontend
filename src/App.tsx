@@ -6,7 +6,9 @@ import { ResultPanel } from "./components/ResultPanel.tsx";
 import { DebugPanel } from "./components/DebugPanel.tsx";
 import { BenchmarkPanel } from "./components/BenchmarkPanel.tsx";
 import { validateAndParse } from "./utils/validation.ts";
-import { optimizeSmallWorld, runBenchmark } from "./api.ts";
+import { clampEdgeWeight } from "./utils/edgeWeight.ts";
+import { buildRandomMockResponse } from "./utils/devMockOptimization.ts";
+import { optimizeSmallWorld, runBenchmark, toApiRequest } from "./api.ts";
 import type {
   ParsedGraph,
   OptimizeSmallWorldResponse,
@@ -28,6 +30,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [hasDrawn, setHasDrawn] = useState(false);
   const [apiTarget, setApiTarget] = useState<ApiTarget>("small-world");
+  const [defaultWeight, setDefaultWeight] = useState(10);
   const [benchmarkResult, setBenchmarkResult] =
     useState<BenchmarkResult | null>(null);
   const [benchmarkLoading, setBenchmarkLoading] = useState(false);
@@ -56,7 +59,7 @@ export default function App() {
   );
 
   const handleDrawGraph = useCallback(() => {
-    const result = validateAndParse(verticesRaw, edgesRaw);
+    const result = validateAndParse(verticesRaw, edgesRaw, defaultWeight);
     if (!result.valid) {
       setError(t(result.error.key, result.error));
       return;
@@ -65,25 +68,20 @@ export default function App() {
     setParsedGraph(result.graph);
     setOptimizationResult(null);
     setHasDrawn(true);
-  }, [verticesRaw, edgesRaw, t]);
+  }, [verticesRaw, edgesRaw, defaultWeight, t]);
 
   const handleOptimize = useCallback(async () => {
     if (!parsedGraph) return;
-    const result = validateAndParse(verticesRaw, edgesRaw);
+    const result = validateAndParse(verticesRaw, edgesRaw, defaultWeight);
     if (!result.valid) {
       setError(t(result.error.key, result.error));
       return;
     }
+    setParsedGraph(result.graph);
     setError(null);
     setLoading(true);
     try {
-      const res = await optimizeSmallWorld(
-        {
-          vertices: parsedGraph.vertices,
-          edges: parsedGraph.edges,
-        },
-        apiTarget
-      );
+      const res = await optimizeSmallWorld(result.graph, apiTarget);
       setOptimizationResult(res);
     } catch (err) {
       const msg =
@@ -100,7 +98,7 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }, [parsedGraph, verticesRaw, edgesRaw, apiTarget, t]);
+  }, [parsedGraph, verticesRaw, edgesRaw, defaultWeight, apiTarget, t]);
 
   const handleVerticesChange = useCallback((v: string) => {
     setVerticesRaw(v);
@@ -132,9 +130,27 @@ export default function App() {
     }
   }, [t]);
 
+  const handleDefaultWeightChange = useCallback((w: number) => {
+    setDefaultWeight(clampEdgeWeight(w));
+    setError(null);
+  }, []);
+
+  const handleDevMock = useCallback(() => {
+    const result = validateAndParse(verticesRaw, edgesRaw, defaultWeight);
+    if (!result.valid) {
+      setError(t(result.error.key, result.error));
+      return;
+    }
+    setError(null);
+    setParsedGraph(result.graph);
+    setHasDrawn(true);
+    setOptimizationResult(buildRandomMockResponse(result.graph));
+  }, [verticesRaw, edgesRaw, defaultWeight, t]);
+
   const handleReset = useCallback(() => {
     setVerticesRaw("1,2,3,4,5");
     setEdgesRaw("1 2\n2 3\n3 4\n4 5\n5 1");
+    setDefaultWeight(10);
     setParsedGraph(null);
     setOptimizationResult(null);
     setHasDrawn(false);
@@ -144,12 +160,7 @@ export default function App() {
   const canDraw = verticesRaw.trim().length > 0;
   const canOptimize = parsedGraph !== null && !loading;
 
-  const requestForDebug = parsedGraph
-    ? {
-        vertices: parsedGraph.vertices,
-        edges: parsedGraph.edges,
-      }
-    : null;
+  const requestForDebug = parsedGraph ? toApiRequest(parsedGraph) : null;
 
   const currentLanguage = (i18n.language as Language) ?? "ko";
 
@@ -198,8 +209,10 @@ export default function App() {
           <GraphInput
             verticesRaw={verticesRaw}
             edgesRaw={edgesRaw}
+            defaultWeight={defaultWeight}
             onVerticesChange={handleVerticesChange}
             onEdgesChange={handleEdgesChange}
+            onDefaultWeightChange={handleDefaultWeightChange}
             onDrawGraph={handleDrawGraph}
             onOptimize={handleOptimize}
             onReset={handleReset}
@@ -210,6 +223,9 @@ export default function App() {
             error={error}
             apiTarget={apiTarget}
             onApiTargetChange={handleApiTargetChange}
+            onDevMock={
+              import.meta.env.DEV ? handleDevMock : undefined
+            }
           />
           {loading && <div className="loading">{t("loading")}</div>}
           <ResultPanel result={optimizationResult} />

@@ -5,8 +5,10 @@ import type { ApiTarget } from "../types.ts";
 type GraphInputProps = {
   verticesRaw: string;
   edgesRaw: string;
+  defaultWeight: number;
   onVerticesChange: (v: string) => void;
   onEdgesChange: (e: string) => void;
+  onDefaultWeightChange: (w: number) => void;
   onDrawGraph: () => void;
   onOptimize: () => void;
   onReset: () => void;
@@ -17,13 +19,17 @@ type GraphInputProps = {
   error: string | null;
   apiTarget: ApiTarget;
   onApiTargetChange: (target: ApiTarget) => void;
+  /** 개발 모드에서만 전달 — 랜덤 방향 간선 mock */
+  onDevMock?: () => void;
 };
 
 export function GraphInput({
   verticesRaw,
   edgesRaw,
+  defaultWeight,
   onVerticesChange,
   onEdgesChange,
+  onDefaultWeightChange,
   onDrawGraph,
   onOptimize,
   onReset,
@@ -34,6 +40,7 @@ export function GraphInput({
   error,
   apiTarget,
   onApiTargetChange,
+  onDevMock,
 }: GraphInputProps) {
   const { t } = useTranslation();
   return (
@@ -92,6 +99,21 @@ export function GraphInput({
         />
       </div>
 
+      <div className="field">
+        <label htmlFor="default-weight">{t("graphInput.defaultWeight")}</label>
+        <input
+          id="default-weight"
+          type="number"
+          value={defaultWeight}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            onDefaultWeightChange(Number(e.target.value))
+          }
+          min={1}
+          max={10}
+          step={1}
+        />
+      </div>
+
       {error && <div className="error">{error}</div>}
 
       <div className="buttons">
@@ -120,6 +142,17 @@ export function GraphInput({
         >
           {t("graphInput.runBenchmark")}
         </button>
+        {onDevMock && (
+          <button
+            className="btn-dev"
+            onClick={onDevMock}
+            disabled={!canDraw}
+            type="button"
+            title={t("graphInput.devMockTitle")}
+          >
+            {t("graphInput.devMock")}
+          </button>
+        )}
       </div>
     </div>
   );

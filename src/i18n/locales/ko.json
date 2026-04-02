@@ -12,12 +12,15 @@
     "apiSelection": "API 선택",
     "vertices": "정점 (쉼표로 구분)",
     "verticesPlaceholder": "예: 1,2,3,4,5",
-    "edges": "간선 (한 줄에 하나씩, 띄어쓰기 또는 쉼표)",
-    "edgesPlaceholder": "예:\n1 2\n2 3\n3 4",
+    "edges": "간선 (한 줄에 하나씩, 가중치 1~10 선택)",
+    "edgesPlaceholder": "예:\n1 2\n2 3 8\n3 4",
+    "defaultWeight": "기본 가중치 (1~10)",
     "drawGraph": "그래프 그리기",
     "pathSearch": "경로 탐색",
     "reset": "초기화",
-    "runBenchmark": "벤치마크 실행"
+    "runBenchmark": "벤치마크 실행",
+    "devMock": "Dev: 랜덤 경로",
+    "devMockTitle": "서버 없이 각 간선의 방향을 무작위로 정해 시각화·애니메이션을 테스트합니다."
   },
   "resultPanel": {
     "title": "최적화 결과",
@@ -39,7 +42,8 @@
     "verticesEmpty": "vertices가 비어있습니다.",
     "invalidVertex": "잘못된 정점 값: \"{{value}}\"",
     "duplicateVertices": "vertices에 중복이 있습니다.",
-    "invalidEdgeFormat": "잘못된 간선 형식 (줄 {{line}}): \"{{value}}\". \"u v\" 또는 \"u,v\" 형식으로 입력하세요.",
+    "invalidEdgeFormat": "잘못된 간선 형식 (줄 {{line}}): \"{{value}}\". \"u v\" 또는 \"u v w\" 형식으로 입력하세요. w는 1~10 정수.",
+    "weightOutOfRange": "가중치는 {{min}}~{{max}} 사이의 정수만 가능합니다 (줄 {{line}}): \"{{value}}\"",
     "invalidEdgeValue": "잘못된 간선 값 (줄 {{line}}): \"{{value}}\"",
     "selfLoop": "self-loop 불가 (줄 {{line}}): \"{{u}} {{v}}\"",
     "vertexNotFound": "정점 {{vertex}}가 vertices에 없습니다. (줄 {{line}})"
