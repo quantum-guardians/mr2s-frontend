@@ -7,6 +7,14 @@
     "darkMode": "Dark mode",
     "lightMode": "Light mode"
   },
+  "nav": {
+    "optimizer": "Graph Optimizer",
+    "simulation": "Simulation"
+  },
+  "simulation": {
+    "title": "Simulation",
+    "description": "MR2S Simulation page."
+  },
   "graphInput": {
     "title": "Graph Input",
     "apiSelection": "API Selection",
