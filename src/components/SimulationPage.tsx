@@ -16,6 +16,7 @@ export function SimulationPage() {
           src={SIMULATION_URL}
           title={t("simulation.title")}
           className="simulation-frame"
+          sandbox="allow-scripts allow-same-origin allow-forms"
           allowFullScreen
         />
       </div>
