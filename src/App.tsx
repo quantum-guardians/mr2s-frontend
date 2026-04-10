@@ -5,6 +5,7 @@ import { GraphVisualization } from "./components/GraphVisualization.tsx";
 import { ResultPanel } from "./components/ResultPanel.tsx";
 import { DebugPanel } from "./components/DebugPanel.tsx";
 import { BenchmarkPanel } from "./components/BenchmarkPanel.tsx";
+import { SimulationPage } from "./components/SimulationPage.tsx";
 import { validateAndParse } from "./utils/validation.ts";
 import { optimizeSmallWorld, runBenchmark } from "./api.ts";
 import type {
@@ -16,9 +17,11 @@ import type {
 import "./App.css";
 
 type Language = "ko" | "en" | "ja";
+type Page = "optimizer" | "simulation";
 
 export default function App() {
   const { t, i18n } = useTranslation();
+  const [page, setPage] = useState<Page>("optimizer");
   const [verticesRaw, setVerticesRaw] = useState("1,2,3,4,5");
   const [edgesRaw, setEdgesRaw] = useState("1 2\n2 3\n3 4\n4 5\n5 1");
   const [parsedGraph, setParsedGraph] = useState<ParsedGraph | null>(null);
@@ -191,41 +194,63 @@ export default function App() {
             </button>
           </div>
         </div>
+        <nav className="nav-tabs">
+          <button
+            type="button"
+            className={`nav-tab${page === "optimizer" ? " nav-tab--active" : ""}`}
+            onClick={() => setPage("optimizer")}
+          >
+            {t("nav.optimizer")}
+          </button>
+          <button
+            type="button"
+            className={`nav-tab${page === "simulation" ? " nav-tab--active" : ""}`}
+            onClick={() => setPage("simulation")}
+          >
+            {t("nav.simulation")}
+          </button>
+        </nav>
       </header>
 
-      <div className="layout">
-        <aside className="sidebar">
-          <GraphInput
-            verticesRaw={verticesRaw}
-            edgesRaw={edgesRaw}
-            onVerticesChange={handleVerticesChange}
-            onEdgesChange={handleEdgesChange}
-            onDrawGraph={handleDrawGraph}
-            onOptimize={handleOptimize}
-            onReset={handleReset}
-            onBenchmark={handleBenchmark}
-            canDraw={canDraw}
-            canOptimize={canOptimize}
-            benchmarkLoading={benchmarkLoading}
-            error={error}
-            apiTarget={apiTarget}
-            onApiTargetChange={handleApiTargetChange}
-          />
-          {loading && <div className="loading">{t("loading")}</div>}
-          <ResultPanel result={optimizationResult} />
-          <BenchmarkPanel result={benchmarkResult} loading={benchmarkLoading} />
-        </aside>
+      {page === "simulation" ? (
+        <SimulationPage />
+      ) : (
+        <>
+          <div className="layout">
+            <aside className="sidebar">
+              <GraphInput
+                verticesRaw={verticesRaw}
+                edgesRaw={edgesRaw}
+                onVerticesChange={handleVerticesChange}
+                onEdgesChange={handleEdgesChange}
+                onDrawGraph={handleDrawGraph}
+                onOptimize={handleOptimize}
+                onReset={handleReset}
+                onBenchmark={handleBenchmark}
+                canDraw={canDraw}
+                canOptimize={canOptimize}
+                benchmarkLoading={benchmarkLoading}
+                error={error}
+                apiTarget={apiTarget}
+                onApiTargetChange={handleApiTargetChange}
+              />
+              {loading && <div className="loading">{t("loading")}</div>}
+              <ResultPanel result={optimizationResult} />
+              <BenchmarkPanel result={benchmarkResult} loading={benchmarkLoading} />
+            </aside>
 
-        <main className="main">
-          <GraphVisualization
-            parsedGraph={parsedGraph}
-            directedEdges={optimizationResult?.edges ?? null}
-            hasDrawn={hasDrawn}
-          />
-        </main>
-      </div>
+            <main className="main">
+              <GraphVisualization
+                parsedGraph={parsedGraph}
+                directedEdges={optimizationResult?.edges ?? null}
+                hasDrawn={hasDrawn}
+              />
+            </main>
+          </div>
 
-      <DebugPanel request={requestForDebug} response={optimizationResult} />
+          <DebugPanel request={requestForDebug} response={optimizationResult} />
+        </>
+      )}
     </div>
   );
 }

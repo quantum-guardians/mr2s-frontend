@@ -7,6 +7,14 @@
     "darkMode": "ダークモード",
     "lightMode": "ライトモード"
   },
+  "nav": {
+    "optimizer": "グラフ最適化",
+    "simulation": "シミュレーション"
+  },
+  "simulation": {
+    "title": "シミュレーション",
+    "description": "MR2S シミュレーションページです。"
+  },
   "graphInput": {
     "title": "グラフ入力",
     "apiSelection": "API 選択",
