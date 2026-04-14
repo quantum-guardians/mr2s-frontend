@@ -1,18 +1,20 @@
 import { useTranslation } from "react-i18next";
-import type { BenchmarkResult } from "../types.ts";
+import type { BenchmarkResult, ParsedGraph } from "../types.ts";
 import { UNREACHABLE_SCORE } from "../types.ts";
 
 type BenchmarkPanelProps = {
   result: BenchmarkResult | null;
   loading: boolean;
+  graph: ParsedGraph | null;
 };
 
 const APPROACH_LABELS: Record<string, string> = {
-  "small-world": "Small World",
-  naoto: "Naoto",
+  "mr2s": "MR2S",
+  "raw-sa": "Raw",
+  "brute-force": "Bruteforce",
 };
 
-export function BenchmarkPanel({ result, loading }: BenchmarkPanelProps) {
+export function BenchmarkPanel({ result, loading, graph }: BenchmarkPanelProps) {
   const { t } = useTranslation();
 
   if (!loading && !result) return null;
@@ -20,6 +22,14 @@ export function BenchmarkPanel({ result, loading }: BenchmarkPanelProps) {
   return (
     <div className="benchmark-panel">
       <h3>{t("benchmarkPanel.title")}</h3>
+      {graph && (
+        <p className="benchmark-graph-info">
+          {t("benchmarkPanel.graphInfo", {
+            nodes: graph.vertices.length,
+            edges: graph.edges.length,
+          })}
+        </p>
+      )}
       {loading ? (
         <p className="benchmark-loading">{t("benchmarkPanel.running")}</p>
       ) : (
@@ -31,6 +41,7 @@ export function BenchmarkPanel({ result, loading }: BenchmarkPanelProps) {
                 <th>{t("benchmarkPanel.max")}</th>
                 <th>{t("benchmarkPanel.min")}</th>
                 <th>{t("benchmarkPanel.average")}</th>
+                <th>{t("benchmarkPanel.weightBalance")}</th>
                 <th>{t("benchmarkPanel.averageTime")}</th>
                 <th>{t("benchmarkPanel.failures")}</th>
               </tr>
@@ -48,6 +59,11 @@ export function BenchmarkPanel({ result, loading }: BenchmarkPanelProps) {
                         {stats.average === UNREACHABLE_SCORE
                           ? "N/A"
                           : stats.average.toFixed(2)}
+                      </td>
+                      <td>
+                        {stats.weightBalanceSum === UNREACHABLE_SCORE
+                          ? "N/A"
+                          : stats.weightBalanceSum.toFixed(2)}
                       </td>
                       <td>{stats.averageTimeMs.toFixed(2)}</td>
                       <td>{stats.failureCount}</td>

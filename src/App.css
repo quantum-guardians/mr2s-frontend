@@ -226,7 +226,39 @@ header p {
   background: var(--btn-secondary-hover);
 }
 
-.graph-input .buttons .btn-benchmark {
+.graph-input button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.benchmark-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.benchmark-section h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.benchmark-section .field {
+  margin-bottom: 0.5rem;
+}
+
+.benchmark-section input[type="number"] {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-input);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  background: var(--card-bg);
+  color: var(--text);
+}
+
+.benchmark-section .btn-benchmark {
   width: 100%;
   padding: 0.6rem 1rem;
   border: 1px solid var(--btn-secondary-border);
@@ -235,14 +267,13 @@ header p {
   cursor: pointer;
   background: var(--bg-tertiary);
   color: var(--text);
-  margin-top: 0.25rem;
 }
 
-.graph-input .buttons .btn-benchmark:hover:not(:disabled) {
+.benchmark-section .btn-benchmark:hover:not(:disabled) {
   background: var(--btn-secondary-hover);
 }
 
-.graph-input button:disabled {
+.benchmark-section .btn-benchmark:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -443,6 +474,12 @@ header p {
   font-size: 0.9rem;
   color: var(--text-muted);
   margin: 0;
+}
+
+.benchmark-graph-info {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem;
 }
 
 .benchmark-table {

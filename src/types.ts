@@ -22,7 +22,7 @@ export type ParsedGraph = {
   edges: [number, number][];
 };
 
-export type ApiTarget = "small-world" | "naoto";
+export type ApiTarget = "mr2s" | "raw-sa" | "brute-force";
 
 /** Sentinel value returned by the API when a node is unreachable. */
 export const UNREACHABLE_SCORE = -1;
@@ -33,6 +33,7 @@ export type BenchmarkStats = {
   average: number;
   averageTimeMs: number;
   failureCount: number;
+  weightBalanceSum: number;
 };
 
 export type BenchmarkResult = {

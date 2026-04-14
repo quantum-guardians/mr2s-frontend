@@ -25,13 +25,15 @@
     "drawGraph": "Draw Graph",
     "pathSearch": "Path Search",
     "reset": "Reset",
+    "benchmarkTitle": "Benchmark",
+    "nodeCount": "Node count (min 3)",
     "runBenchmark": "Run Benchmark"
   },
   "resultPanel": {
     "title": "Optimization Result",
-    "optimizedScore": "Optimized Graph Score",
-    "bidirectionalScore": "Bidirectional Graph Score",
-    "scoreDiff": "Score Difference",
+    "optimizedScore": "Optimized APSP Sum",
+    "bidirectionalScore": "Bidirectional APSP Sum",
+    "scoreDiff": "APSP Sum Difference",
     "directedEdgeCount": "Optimized Directed Edge Count",
     "unreachableNode": "(Unreachable node exists)"
   },
@@ -58,12 +60,15 @@
   },
   "language": "Language",
   "benchmarkPanel": {
-    "title": "Model Performance Comparison",
-    "running": "Running benchmark... (10 runs per model)",
-    "approach": "Model",
-    "max": "Max Score",
-    "min": "Min Score",
-    "average": "Average Score",
+    "title": "APSP Sum Comparison (Benchmark)",
+    "generating": "Generating planar graph...",
+    "running": "Running benchmark... (3 types × 10 runs)",
+    "graphInfo": "Graph: {{nodes}} nodes, {{edges}} edges",
+    "approach": "Graph Type",
+    "max": "Max APSP Sum",
+    "min": "Min APSP Sum",
+    "average": "Avg APSP Sum",
+    "weightBalance": "Avg Σ(In-Out)²",
     "averageTime": "Average Time (ms)",
     "failures": "Failures"
   }

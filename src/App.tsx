@@ -7,6 +7,7 @@ import { DebugPanel } from "./components/DebugPanel.tsx";
 import { BenchmarkPanel } from "./components/BenchmarkPanel.tsx";
 import { SimulationPage } from "./components/SimulationPage.tsx";
 import { validateAndParse } from "./utils/validation.ts";
+import { generateRandomPlanarGraph } from "./utils/planarGraph.ts";
 import { optimizeSmallWorld, runBenchmark } from "./api.ts";
 import type {
   ParsedGraph,
@@ -30,10 +31,12 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasDrawn, setHasDrawn] = useState(false);
-  const [apiTarget, setApiTarget] = useState<ApiTarget>("small-world");
+  const [apiTarget, setApiTarget] = useState<ApiTarget>("mr2s");
   const [benchmarkResult, setBenchmarkResult] =
     useState<BenchmarkResult | null>(null);
+  const [benchmarkGraph, setBenchmarkGraph] = useState<ParsedGraph | null>(null);
   const [benchmarkLoading, setBenchmarkLoading] = useState(false);
+  const [benchmarkProgress, setBenchmarkProgress] = useState<string | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
       const attr = document.documentElement.getAttribute("data-theme");
@@ -120,11 +123,28 @@ export default function App() {
     setError(null);
   }, []);
 
-  const handleBenchmark = useCallback(async () => {
+  const handleBenchmark = useCallback(async (nodeCount: number) => {
     setBenchmarkLoading(true);
     setBenchmarkResult(null);
+    setBenchmarkProgress(t("benchmarkPanel.generating"));
+    setError(null);
     try {
-      const result = await runBenchmark();
+      const graph = generateRandomPlanarGraph(nodeCount);
+      setBenchmarkGraph(graph);
+      setParsedGraph(graph);
+      setOptimizationResult(null);
+      setHasDrawn(true);
+      setVerticesRaw(graph.vertices.join(","));
+      setEdgesRaw(graph.edges.map(([u, v]) => `${u} ${v}`).join("\n"));
+
+      const result = await runBenchmark(graph, (target, iteration) => {
+        const labels: Record<string, string> = {
+          "mr2s": "MR2S",
+          "raw-sa": "Raw",
+          "brute-force": "Bruteforce",
+        };
+        setBenchmarkProgress(`${labels[target]} ${iteration}/10...`);
+      });
       setBenchmarkResult(result);
     } catch (err) {
       const msg =
@@ -132,6 +152,7 @@ export default function App() {
       setError(msg);
     } finally {
       setBenchmarkLoading(false);
+      setBenchmarkProgress(null);
     }
   }, [t]);
 
@@ -230,13 +251,14 @@ export default function App() {
                 canDraw={canDraw}
                 canOptimize={canOptimize}
                 benchmarkLoading={benchmarkLoading}
+                benchmarkProgress={benchmarkProgress}
                 error={error}
                 apiTarget={apiTarget}
                 onApiTargetChange={handleApiTargetChange}
               />
               {loading && <div className="loading">{t("loading")}</div>}
               <ResultPanel result={optimizationResult} />
-              <BenchmarkPanel result={benchmarkResult} loading={benchmarkLoading} />
+              <BenchmarkPanel result={benchmarkResult} loading={benchmarkLoading} graph={benchmarkGraph} />
             </aside>
 
             <main className="main">

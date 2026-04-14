@@ -25,13 +25,15 @@
     "drawGraph": "グラフを描画",
     "pathSearch": "パス探索",
     "reset": "リセット",
+    "benchmarkTitle": "ベンチマーク",
+    "nodeCount": "ノード数（最小3）",
     "runBenchmark": "ベンチマーク実行"
   },
   "resultPanel": {
     "title": "最適化結果",
-    "optimizedScore": "Optimized Graph Score",
-    "bidirectionalScore": "Bidirectional Graph Score",
-    "scoreDiff": "スコア差分",
+    "optimizedScore": "Optimized APSP 合計",
+    "bidirectionalScore": "Bidirectional APSP 合計",
+    "scoreDiff": "APSP 合計の差分",
     "directedEdgeCount": "最適化された有向辺の数",
     "unreachableNode": "（到達不能なノードあり）"
   },
@@ -58,12 +60,15 @@
   },
   "language": "言語",
   "benchmarkPanel": {
-    "title": "モデル性能比較",
-    "running": "ベンチマーク実行中... （各モデル10回）",
-    "approach": "モデル",
-    "max": "最大スコア",
-    "min": "最小スコア",
-    "average": "平均スコア",
+    "title": "APSP 合計比較（ベンチマーク）",
+    "generating": "平面グラフを生成中...",
+    "running": "ベンチマーク実行中... （3種類 × 10回）",
+    "graphInfo": "グラフ: ノード{{nodes}}個、辺{{edges}}本",
+    "approach": "グラフタイプ",
+    "max": "最大 APSP 合計",
+    "min": "最小 APSP 合計",
+    "average": "平均 APSP 合計",
+    "weightBalance": "平均 Σ(In-Out)²",
     "averageTime": "平均所要時間 (ms)",
     "failures": "失敗回数"
   }

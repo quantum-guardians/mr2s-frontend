@@ -1,4 +1,5 @@
 import type { ChangeEvent } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ApiTarget } from "../types.ts";
 
@@ -10,10 +11,11 @@ type GraphInputProps = {
   onDrawGraph: () => void;
   onOptimize: () => void;
   onReset: () => void;
-  onBenchmark: () => void;
+  onBenchmark: (nodeCount: number) => void;
   canDraw: boolean;
   canOptimize: boolean;
   benchmarkLoading: boolean;
+  benchmarkProgress: string | null;
   error: string | null;
   apiTarget: ApiTarget;
   onApiTargetChange: (target: ApiTarget) => void;
@@ -31,11 +33,17 @@ export function GraphInput({
   canDraw,
   canOptimize,
   benchmarkLoading,
+  benchmarkProgress,
   error,
   apiTarget,
   onApiTargetChange,
 }: GraphInputProps) {
   const { t } = useTranslation();
+  const [benchmarkNodeCount, setBenchmarkNodeCount] = useState("15");
+
+  const parsedNodeCount = parseInt(benchmarkNodeCount, 10);
+  const validNodeCount = !isNaN(parsedNodeCount) && parsedNodeCount >= 3;
+
   return (
     <div className="graph-input">
       <h3>{t("graphInput.title")}</h3>
@@ -47,21 +55,31 @@ export function GraphInput({
             <input
               type="radio"
               name="api-target"
-              value="small-world"
-              checked={apiTarget === "small-world"}
+              value="mr2s"
+              checked={apiTarget === "mr2s"}
               onChange={(e) => onApiTargetChange(e.target.value as ApiTarget)}
             />
-            Small World
+            MR2S
           </label>
           <label>
             <input
               type="radio"
               name="api-target"
-              value="naoto"
-              checked={apiTarget === "naoto"}
+              value="raw-sa"
+              checked={apiTarget === "raw-sa"}
               onChange={(e) => onApiTargetChange(e.target.value as ApiTarget)}
             />
-            Naoto
+            Raw
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="api-target"
+              value="brute-force"
+              checked={apiTarget === "brute-force"}
+              onChange={(e) => onApiTargetChange(e.target.value as ApiTarget)}
+            />
+            Bruteforce
           </label>
         </div>
       </div>
@@ -112,13 +130,30 @@ export function GraphInput({
         <button className="btn-secondary" onClick={onReset} type="button">
           {t("graphInput.reset")}
         </button>
+      </div>
+
+      <div className="benchmark-section">
+        <h4>{t("graphInput.benchmarkTitle")}</h4>
+        <div className="field">
+          <label htmlFor="benchmark-nodes">{t("graphInput.nodeCount")}</label>
+          <input
+            id="benchmark-nodes"
+            type="number"
+            min={3}
+            max={200}
+            value={benchmarkNodeCount}
+            onChange={(e) => setBenchmarkNodeCount(e.target.value)}
+          />
+        </div>
         <button
           className="btn-benchmark"
-          onClick={onBenchmark}
-          disabled={benchmarkLoading}
+          onClick={() => onBenchmark(parsedNodeCount)}
+          disabled={benchmarkLoading || !validNodeCount}
           type="button"
         >
-          {t("graphInput.runBenchmark")}
+          {benchmarkLoading
+            ? benchmarkProgress ?? t("graphInput.runBenchmark")
+            : t("graphInput.runBenchmark")}
         </button>
       </div>
     </div>
