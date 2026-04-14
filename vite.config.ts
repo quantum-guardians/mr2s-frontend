@@ -8,7 +8,6 @@ export default defineConfig({
       "/api": {
         target: "https://quantum.yunseong.dev",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
   },

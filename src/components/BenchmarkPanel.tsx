@@ -8,8 +8,9 @@ type BenchmarkPanelProps = {
 };
 
 const APPROACH_LABELS: Record<string, string> = {
-  "small-world": "Small World",
-  naoto: "Naoto",
+  "mr2s": "MR2S",
+  "raw-sa": "Raw",
+  "brute-force": "Bruteforce",
 };
 
 export function BenchmarkPanel({ result, loading }: BenchmarkPanelProps) {

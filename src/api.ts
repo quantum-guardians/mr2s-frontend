@@ -3,29 +3,45 @@ import type {
   OptimizeSmallWorldResponse,
   ApiTarget,
   BenchmarkResult,
+  BenchmarkStats,
 } from "./types.ts";
 import { UNREACHABLE_SCORE } from "./types.ts";
 
-// 개발/프로덕션 모두 프록시 경로 사용 (CORS 우회)
-// - 개발: Vite proxy (vite.config.ts)
-// - 프로덕션: Vercel rewrites (vercel.json)
-export const SMALL_WORLD_API_URL = "/api/optimize/small-world";
-export const NAOTO_API_URL = "/api/optimize/naoto";
+const API_URLS: Record<ApiTarget, string> = {
+  "mr2s": "/api/v1/mr2s",
+  "raw-sa": "/api/v1/raw-sa",
+  "brute-force": "/api/v1/brute-force",
+};
+
+export class ApiTimeoutError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ApiTimeoutError";
+  }
+}
 
 export async function optimizeSmallWorld(
   request: OptimizeSmallWorldRequest,
   apiTarget: ApiTarget
 ): Promise<OptimizeSmallWorldResponse> {
-  const url =
-    apiTarget === "naoto" ? NAOTO_API_URL : SMALL_WORLD_API_URL;
+  const url = API_URLS[apiTarget];
+
+  const body = {
+    vertices: request.vertices,
+    edges: request.edges.map(([u, v]) => ({ vertices: [u, v], weight: 1 })),
+  };
 
   const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(request),
+    body: JSON.stringify(body),
   });
+
+  if (response.status === 408) {
+    throw new ApiTimeoutError("Request Timeout (408)");
+  }
 
   if (!response.ok) {
     const text = await response.text();
@@ -49,12 +65,28 @@ export const BENCHMARK_GRAPH: OptimizeSmallWorldRequest = {
 };
 
 const BENCHMARK_ITERATIONS = 10;
-const API_TARGETS: ApiTarget[] = ["small-world", "naoto"];
+const ALL_TARGETS: ApiTarget[] = ["mr2s", "raw-sa", "brute-force"];
+
+function buildStats(scores: number[], durations: number[], failureCount: number): BenchmarkStats {
+  return {
+    max: scores.length > 0 ? Math.max(...scores) : UNREACHABLE_SCORE,
+    min: scores.length > 0 ? Math.min(...scores) : UNREACHABLE_SCORE,
+    average:
+      scores.length > 0
+        ? scores.reduce((a, b) => a + b, 0) / scores.length
+        : UNREACHABLE_SCORE,
+    averageTimeMs:
+      durations.length > 0
+        ? durations.reduce((a, b) => a + b, 0) / durations.length
+        : 0,
+    failureCount,
+  };
+}
 
 export async function runBenchmark(): Promise<BenchmarkResult> {
   const result = {} as BenchmarkResult;
 
-  for (const target of API_TARGETS) {
+  for (const target of ALL_TARGETS) {
     const scores: number[] = [];
     const durations: number[] = [];
     let failureCount = 0;
@@ -63,31 +95,17 @@ export async function runBenchmark(): Promise<BenchmarkResult> {
       const start = performance.now();
       try {
         const res = await optimizeSmallWorld(BENCHMARK_GRAPH, target);
-        if (res.optimized_graph_score === UNREACHABLE_SCORE) {
-          failureCount++;
-        } else {
-          scores.push(res.optimized_graph_score);
-        }
+        const elapsed = performance.now() - start;
+        scores.push(res.optimized_graph_score);
+        durations.push(elapsed);
       } catch {
+        const elapsed = performance.now() - start;
+        durations.push(elapsed);
         failureCount++;
-      } finally {
-        durations.push(performance.now() - start);
       }
     }
 
-    result[target] = {
-      max: scores.length > 0 ? Math.max(...scores) : UNREACHABLE_SCORE,
-      min: scores.length > 0 ? Math.min(...scores) : UNREACHABLE_SCORE,
-      average:
-        scores.length > 0
-          ? scores.reduce((a, b) => a + b, 0) / scores.length
-          : UNREACHABLE_SCORE,
-      averageTimeMs:
-        durations.length > 0
-          ? durations.reduce((a, b) => a + b, 0) / durations.length
-          : 0,
-      failureCount,
-    };
+    result[target] = buildStats(scores, durations, failureCount);
   }
 
   return result;

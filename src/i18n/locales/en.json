@@ -29,9 +29,9 @@
   },
   "resultPanel": {
     "title": "Optimization Result",
-    "optimizedScore": "Optimized Graph Score",
-    "bidirectionalScore": "Bidirectional Graph Score",
-    "scoreDiff": "Score Difference",
+    "optimizedScore": "Optimized APSP Sum",
+    "bidirectionalScore": "Bidirectional APSP Sum",
+    "scoreDiff": "APSP Sum Difference",
     "directedEdgeCount": "Optimized Directed Edge Count",
     "unreachableNode": "(Unreachable node exists)"
   },
@@ -58,12 +58,12 @@
   },
   "language": "Language",
   "benchmarkPanel": {
-    "title": "Model Performance Comparison",
-    "running": "Running benchmark... (10 runs per model)",
-    "approach": "Model",
-    "max": "Max Score",
-    "min": "Min Score",
-    "average": "Average Score",
+    "title": "APSP Sum Comparison (Benchmark)",
+    "running": "Running benchmark... (3 types × 10 runs)",
+    "approach": "Graph Type",
+    "max": "Max APSP Sum",
+    "min": "Min APSP Sum",
+    "average": "Avg APSP Sum",
     "averageTime": "Average Time (ms)",
     "failures": "Failures"
   }

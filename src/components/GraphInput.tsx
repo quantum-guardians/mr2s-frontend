@@ -47,21 +47,31 @@ export function GraphInput({
             <input
               type="radio"
               name="api-target"
-              value="small-world"
-              checked={apiTarget === "small-world"}
+              value="mr2s"
+              checked={apiTarget === "mr2s"}
               onChange={(e) => onApiTargetChange(e.target.value as ApiTarget)}
             />
-            Small World
+            MR2S
           </label>
           <label>
             <input
               type="radio"
               name="api-target"
-              value="naoto"
-              checked={apiTarget === "naoto"}
+              value="raw-sa"
+              checked={apiTarget === "raw-sa"}
               onChange={(e) => onApiTargetChange(e.target.value as ApiTarget)}
             />
-            Naoto
+            Raw
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="api-target"
+              value="brute-force"
+              checked={apiTarget === "brute-force"}
+              onChange={(e) => onApiTargetChange(e.target.value as ApiTarget)}
+            />
+            Bruteforce
           </label>
         </div>
       </div>

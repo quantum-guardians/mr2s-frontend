@@ -30,7 +30,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasDrawn, setHasDrawn] = useState(false);
-  const [apiTarget, setApiTarget] = useState<ApiTarget>("small-world");
+  const [apiTarget, setApiTarget] = useState<ApiTarget>("mr2s");
   const [benchmarkResult, setBenchmarkResult] =
     useState<BenchmarkResult | null>(null);
   const [benchmarkLoading, setBenchmarkLoading] = useState(false);

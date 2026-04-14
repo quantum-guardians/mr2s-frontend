@@ -29,9 +29,9 @@
   },
   "resultPanel": {
     "title": "최적화 결과",
-    "optimizedScore": "Optimized Graph Score",
-    "bidirectionalScore": "Bidirectional Graph Score",
-    "scoreDiff": "점수 차이",
+    "optimizedScore": "Optimized APSP 합",
+    "bidirectionalScore": "Bidirectional APSP 합",
+    "scoreDiff": "APSP 합 차이",
     "directedEdgeCount": "최적화된 방향 간선 개수",
     "unreachableNode": "(도달할 수 없는 노드 존재)"
   },
@@ -58,12 +58,12 @@
   },
   "language": "언어",
   "benchmarkPanel": {
-    "title": "모델 성능 비교",
-    "running": "벤치마크 실행 중... (각 모델 10회)",
-    "approach": "모델",
-    "max": "최대 점수",
-    "min": "최소 점수",
-    "average": "평균 점수",
+    "title": "APSP 합 비교 (벤치마크)",
+    "running": "벤치마크 실행 중... (3가지 × 10회)",
+    "approach": "그래프 유형",
+    "max": "최대 APSP 합",
+    "min": "최소 APSP 합",
+    "average": "평균 APSP 합",
     "averageTime": "평균 소요 시간 (ms)",
     "failures": "실패 횟수"
   }
