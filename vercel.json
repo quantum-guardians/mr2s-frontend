@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://quantum.yunseong.dev/$1"
+      "destination": "https://quantum.yunseong.dev/api/$1"
     }
   ]
 }
