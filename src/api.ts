@@ -57,7 +57,28 @@ export async function optimizeSmallWorld(
 const BENCHMARK_ITERATIONS = 10;
 const ALL_TARGETS: ApiTarget[] = ["mr2s", "raw-sa", "brute-force"];
 
-function buildStats(scores: number[], durations: number[], failureCount: number): BenchmarkStats {
+function calcWeightBalance(edges: OptimizeSmallWorldResponse["edges"]): number {
+  const inW: Record<number, number> = {};
+  const outW: Record<number, number> = {};
+  for (const e of edges) {
+    outW[e._from] = (outW[e._from] ?? 0) + 1;
+    inW[e.to] = (inW[e.to] ?? 0) + 1;
+  }
+  const allNodes = new Set([...Object.keys(inW), ...Object.keys(outW)].map(Number));
+  let sum = 0;
+  for (const v of allNodes) {
+    const diff = (inW[v] ?? 0) - (outW[v] ?? 0);
+    sum += diff * diff;
+  }
+  return sum;
+}
+
+function buildStats(
+  scores: number[],
+  durations: number[],
+  failureCount: number,
+  balances: number[],
+): BenchmarkStats {
   return {
     max: scores.length > 0 ? Math.max(...scores) : UNREACHABLE_SCORE,
     min: scores.length > 0 ? Math.min(...scores) : UNREACHABLE_SCORE,
@@ -70,6 +91,10 @@ function buildStats(scores: number[], durations: number[], failureCount: number)
         ? durations.reduce((a, b) => a + b, 0) / durations.length
         : 0,
     failureCount,
+    weightBalanceSum:
+      balances.length > 0
+        ? balances.reduce((a, b) => a + b, 0) / balances.length
+        : UNREACHABLE_SCORE,
   };
 }
 
@@ -82,6 +107,7 @@ export async function runBenchmark(
   for (const target of ALL_TARGETS) {
     const scores: number[] = [];
     const durations: number[] = [];
+    const balances: number[] = [];
     let failureCount = 0;
 
     for (let i = 0; i < BENCHMARK_ITERATIONS; i++) {
@@ -92,6 +118,7 @@ export async function runBenchmark(
         const elapsed = performance.now() - start;
         scores.push(res.optimized_graph_score);
         durations.push(elapsed);
+        balances.push(calcWeightBalance(res.edges));
       } catch {
         const elapsed = performance.now() - start;
         durations.push(elapsed);
@@ -99,7 +126,7 @@ export async function runBenchmark(
       }
     }
 
-    result[target] = buildStats(scores, durations, failureCount);
+    result[target] = buildStats(scores, durations, failureCount, balances);
   }
 
   return result;

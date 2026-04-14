@@ -68,6 +68,7 @@
     "max": "Max APSP Sum",
     "min": "Min APSP Sum",
     "average": "Avg APSP Sum",
+    "weightBalance": "Avg Σ(In-Out)²",
     "averageTime": "Average Time (ms)",
     "failures": "Failures"
   }

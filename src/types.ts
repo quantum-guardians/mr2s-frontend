@@ -33,6 +33,7 @@ export type BenchmarkStats = {
   average: number;
   averageTimeMs: number;
   failureCount: number;
+  weightBalanceSum: number;
 };
 
 export type BenchmarkResult = {

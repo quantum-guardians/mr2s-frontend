@@ -68,6 +68,7 @@
     "max": "최대 APSP 합",
     "min": "최소 APSP 합",
     "average": "평균 APSP 합",
+    "weightBalance": "평균 Σ(In-Out)²",
     "averageTime": "평균 소요 시간 (ms)",
     "failures": "실패 횟수"
   }

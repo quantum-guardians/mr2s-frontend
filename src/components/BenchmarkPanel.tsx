@@ -41,6 +41,7 @@ export function BenchmarkPanel({ result, loading, graph }: BenchmarkPanelProps) 
                 <th>{t("benchmarkPanel.max")}</th>
                 <th>{t("benchmarkPanel.min")}</th>
                 <th>{t("benchmarkPanel.average")}</th>
+                <th>{t("benchmarkPanel.weightBalance")}</th>
                 <th>{t("benchmarkPanel.averageTime")}</th>
                 <th>{t("benchmarkPanel.failures")}</th>
               </tr>
@@ -58,6 +59,11 @@ export function BenchmarkPanel({ result, loading, graph }: BenchmarkPanelProps) 
                         {stats.average === UNREACHABLE_SCORE
                           ? "N/A"
                           : stats.average.toFixed(2)}
+                      </td>
+                      <td>
+                        {stats.weightBalanceSum === UNREACHABLE_SCORE
+                          ? "N/A"
+                          : stats.weightBalanceSum.toFixed(2)}
                       </td>
                       <td>{stats.averageTimeMs.toFixed(2)}</td>
                       <td>{stats.failureCount}</td>
