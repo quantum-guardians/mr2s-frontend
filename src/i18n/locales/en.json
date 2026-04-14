@@ -25,6 +25,8 @@
     "drawGraph": "Draw Graph",
     "pathSearch": "Path Search",
     "reset": "Reset",
+    "benchmarkTitle": "Benchmark",
+    "nodeCount": "Node count (min 3)",
     "runBenchmark": "Run Benchmark"
   },
   "resultPanel": {
@@ -59,7 +61,9 @@
   "language": "Language",
   "benchmarkPanel": {
     "title": "APSP Sum Comparison (Benchmark)",
+    "generating": "Generating planar graph...",
     "running": "Running benchmark... (3 types × 10 runs)",
+    "graphInfo": "Graph: {{nodes}} nodes, {{edges}} edges",
     "approach": "Graph Type",
     "max": "Max APSP Sum",
     "min": "Min APSP Sum",

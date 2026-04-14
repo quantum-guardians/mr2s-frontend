@@ -25,6 +25,8 @@
     "drawGraph": "グラフを描画",
     "pathSearch": "パス探索",
     "reset": "リセット",
+    "benchmarkTitle": "ベンチマーク",
+    "nodeCount": "ノード数（最小3）",
     "runBenchmark": "ベンチマーク実行"
   },
   "resultPanel": {
@@ -59,7 +61,9 @@
   "language": "言語",
   "benchmarkPanel": {
     "title": "APSP 合計比較（ベンチマーク）",
+    "generating": "平面グラフを生成中...",
     "running": "ベンチマーク実行中... （3種類 × 10回）",
+    "graphInfo": "グラフ: ノード{{nodes}}個、辺{{edges}}本",
     "approach": "グラフタイプ",
     "max": "最大 APSP 合計",
     "min": "最小 APSP 合計",

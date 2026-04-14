@@ -54,16 +54,6 @@ export async function optimizeSmallWorld(
   return data;
 }
 
-export const BENCHMARK_GRAPH: OptimizeSmallWorldRequest = {
-  vertices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-  edges: [
-    [1, 2], [1, 4], [1, 7], [2, 3], [2, 5], [2, 8], [3, 6], [3, 9],
-    [4, 5], [4, 10], [5, 6], [5, 11], [6, 12], [7, 8], [7, 10],
-    [8, 9], [8, 13], [9, 12], [9, 14], [10, 11], [10, 13], [11, 12],
-    [11, 15], [12, 14], [13, 14], [14, 15], [15, 1],
-  ],
-};
-
 const BENCHMARK_ITERATIONS = 10;
 const ALL_TARGETS: ApiTarget[] = ["mr2s", "raw-sa", "brute-force"];
 
@@ -83,7 +73,10 @@ function buildStats(scores: number[], durations: number[], failureCount: number)
   };
 }
 
-export async function runBenchmark(): Promise<BenchmarkResult> {
+export async function runBenchmark(
+  graph: OptimizeSmallWorldRequest,
+  onProgress?: (target: ApiTarget, iteration: number) => void,
+): Promise<BenchmarkResult> {
   const result = {} as BenchmarkResult;
 
   for (const target of ALL_TARGETS) {
@@ -92,9 +85,10 @@ export async function runBenchmark(): Promise<BenchmarkResult> {
     let failureCount = 0;
 
     for (let i = 0; i < BENCHMARK_ITERATIONS; i++) {
+      onProgress?.(target, i + 1);
       const start = performance.now();
       try {
-        const res = await optimizeSmallWorld(BENCHMARK_GRAPH, target);
+        const res = await optimizeSmallWorld(graph, target);
         const elapsed = performance.now() - start;
         scores.push(res.optimized_graph_score);
         durations.push(elapsed);
