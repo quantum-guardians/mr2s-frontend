@@ -1,6 +1,6 @@
 import type { ParsedGraph } from "./types";
 
-const GRAPH_API_BASE = "/graph-api";
+const GRAPH_API_BASE = import.meta.env.VITE_GRAPH_API_BASE ?? "/graph-api";
 
 type BackendEdge = { source: number; target: number };
 type BackendPositions = Record<string, { x: number; y: number }>;
