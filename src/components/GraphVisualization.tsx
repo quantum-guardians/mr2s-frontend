@@ -95,12 +95,23 @@ function buildNodesAndEdges(
     data: { label: String(v) },
   }));
 
-  const layoutEdges: Edge[] = graph.edges.map(([u, v]) => ({
-    id: `layout-${u}-${v}`,
-    source: String(u),
-    target: String(v),
-  }));
-  const layoutedNodes = getLayoutedNodes(nodes, layoutEdges);
+  let layoutedNodes: Node[];
+  if (graph.positions) {
+    layoutedNodes = nodes.map((node) => ({
+      ...node,
+      position: {
+        x: (graph.positions![Number(node.id)]?.x ?? 0) - NODE_WIDTH / 2,
+        y: (graph.positions![Number(node.id)]?.y ?? 0) - NODE_HEIGHT / 2,
+      },
+    }));
+  } else {
+    const layoutEdges: Edge[] = graph.edges.map(([u, v]) => ({
+      id: `layout-${u}-${v}`,
+      source: String(u),
+      target: String(v),
+    }));
+    layoutedNodes = getLayoutedNodes(nodes, layoutEdges);
+  }
 
   const existingIds = new Set(existingNodes?.map((n) => n.id) ?? []);
   const sameGraph =
@@ -126,12 +137,17 @@ function buildNodesAndEdges(
     });
   });
 
-  const addEdgeWithHandles = (
+  const useBackendPositions = !!graph.positions;
+
+  const addEdge = (
     id: string,
     source: string,
     target: string,
     opts: Partial<Edge>
   ): Edge => {
+    if (useBackendPositions) {
+      return { ...opts, id, source, target, type: "straight" } as Edge;
+    }
     const srcPos = posMap.get(source);
     const tgtPos = posMap.get(target);
     if (!srcPos || !tgtPos) {
@@ -154,7 +170,7 @@ function buildNodesAndEdges(
   if (directedEdges && directedEdges.length > 0) {
     for (const [u, v] of graph.edges) {
       edges.push(
-        addEdgeWithHandles(`bg-${u}-${v}`, String(u), String(v), {
+        addEdge(`bg-${u}-${v}`, String(u), String(v), {
           type: "default",
           markerEnd: undefined,
           markerStart: undefined,
@@ -165,7 +181,7 @@ function buildNodesAndEdges(
     }
     for (const e of directedEdges) {
       edges.push(
-        addEdgeWithHandles(`dir-${e._from}-${e.to}`, String(e._from), String(e.to), {
+        addEdge(`dir-${e._from}-${e.to}`, String(e._from), String(e.to), {
           type: "default",
           animated: true,
           className: "edge-directed-animated",
@@ -182,7 +198,7 @@ function buildNodesAndEdges(
   } else {
     for (const [u, v] of graph.edges) {
       edges.push(
-        addEdgeWithHandles(`undir-${u}-${v}`, String(u), String(v), {
+        addEdge(`undir-${u}-${v}`, String(u), String(v), {
           type: "default",
           markerEnd: undefined,
           markerStart: undefined,

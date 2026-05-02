@@ -9,6 +9,11 @@ export default defineConfig({
         target: "https://quantum.yunseong.dev",
         changeOrigin: true,
       },
+      "/graph-api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/graph-api/, "/graph"),
+      },
     },
   },
 });
