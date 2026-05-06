@@ -11,17 +11,11 @@ import {
   type Edge,
   MarkerType,
 } from "@xyflow/react";
-import dagre from "@dagrejs/dagre";
 import "@xyflow/react/dist/style.css";
 import type { ParsedGraph } from "../types.ts";
 import type { OptimizedDirectedEdge } from "../types.ts";
 import { CircleNode } from "./CircleNode.tsx";
-
-const DEFAULT_LAYOUT = {
-  direction: "TB" as const,
-  nodeSpacing: 60,
-  rankSpacing: 80,
-};
+import { optimizeLayout } from "../utils/planarLayout.ts";
 
 type GraphVisualizationProps = {
   parsedGraph: ParsedGraph | null;
@@ -34,54 +28,6 @@ const NODE_HEIGHT = 40;
 
 const nodeTypes = { circle: CircleNode };
 
-const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-
-function getHandleForDirection(
-  dx: number,
-  dy: number,
-  isSource: boolean
-): string {
-  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
-  const deg = (angle + 360) % 360;
-  const suffix = isSource ? "src" : "tgt";
-  if (deg >= 337.5 || deg < 22.5) return `right-${suffix}`;
-  if (deg >= 22.5 && deg < 67.5) return `bottom-right-${suffix}`;
-  if (deg >= 67.5 && deg < 112.5) return `bottom-${suffix}`;
-  if (deg >= 112.5 && deg < 157.5) return `bottom-left-${suffix}`;
-  if (deg >= 157.5 && deg < 202.5) return `left-${suffix}`;
-  if (deg >= 202.5 && deg < 247.5) return `top-left-${suffix}`;
-  if (deg >= 247.5 && deg < 292.5) return `top-${suffix}`;
-  return `top-right-${suffix}`;
-}
-
-function getLayoutedNodes(nodes: Node[], edges: Edge[]): Node[] {
-  dagreGraph.setGraph({
-    rankdir: DEFAULT_LAYOUT.direction,
-    nodesep: DEFAULT_LAYOUT.nodeSpacing,
-    ranksep: DEFAULT_LAYOUT.rankSpacing,
-  });
-
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
-  });
-
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
-
-  dagre.layout(dagreGraph);
-
-  return nodes.map((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
-    return {
-      ...node,
-      position: {
-        x: nodeWithPosition.x - NODE_WIDTH / 2,
-        y: nodeWithPosition.y - NODE_HEIGHT / 2,
-      },
-    };
-  });
-}
 
 function buildNodesAndEdges(
   graph: ParsedGraph,
@@ -95,12 +41,38 @@ function buildNodesAndEdges(
     data: { label: String(v) },
   }));
 
-  const layoutEdges: Edge[] = graph.edges.map(([u, v]) => ({
-    id: `layout-${u}-${v}`,
-    source: String(u),
-    target: String(v),
-  }));
-  const layoutedNodes = getLayoutedNodes(nodes, layoutEdges);
+  let layoutedNodes: Node[];
+  if (graph.positions) {
+    layoutedNodes = nodes.map((node) => ({
+      ...node,
+      position: {
+        x: (graph.positions![Number(node.id)]?.x ?? 0) - NODE_WIDTH / 2,
+        y: (graph.positions![Number(node.id)]?.y ?? 0) - NODE_HEIGHT / 2,
+      },
+    }));
+  } else {
+    // Apply force-directed layout for manually entered graphs
+    const n = graph.vertices.length;
+    const vertexToIdx = new Map(graph.vertices.map((v, i) => [v, i]));
+    const edges0: [number, number][] = graph.edges.map(([u, v]) => [
+      vertexToIdx.get(u) ?? 0,
+      vertexToIdx.get(v) ?? 0,
+    ]);
+    // Circle initial positions
+    const initPos: [number, number][] = graph.vertices.map((_, i) => [
+      50 + 40 * Math.cos((2 * Math.PI * i) / n),
+      50 + 40 * Math.sin((2 * Math.PI * i) / n),
+    ]);
+    const laid = optimizeLayout({ n, edges: edges0, positions: initPos });
+    const SCALE = 6;
+    layoutedNodes = nodes.map((node, i) => ({
+      ...node,
+      position: {
+        x: laid.positions[i][0] * SCALE - NODE_WIDTH / 2,
+        y: laid.positions[i][1] * SCALE - NODE_HEIGHT / 2,
+      },
+    }));
+  }
 
   const existingIds = new Set(existingNodes?.map((n) => n.id) ?? []);
   const sameGraph =
@@ -126,35 +98,19 @@ function buildNodesAndEdges(
     });
   });
 
-  const addEdgeWithHandles = (
+  const addEdge = (
     id: string,
     source: string,
     target: string,
     opts: Partial<Edge>
-  ): Edge => {
-    const srcPos = posMap.get(source);
-    const tgtPos = posMap.get(target);
-    if (!srcPos || !tgtPos) {
-      return { id, source, target, ...opts } as Edge;
-    }
-    const dx = tgtPos.x - srcPos.x;
-    const dy = tgtPos.y - srcPos.y;
-    return {
-      ...opts,
-      id,
-      source,
-      target,
-      sourceHandle: getHandleForDirection(dx, dy, true),
-      targetHandle: getHandleForDirection(-dx, -dy, false),
-    } as Edge;
-  };
+  ): Edge => ({ ...opts, id, source, target, type: "straight" }) as Edge;
 
   const edges: Edge[] = [];
 
   if (directedEdges && directedEdges.length > 0) {
     for (const [u, v] of graph.edges) {
       edges.push(
-        addEdgeWithHandles(`bg-${u}-${v}`, String(u), String(v), {
+        addEdge(`bg-${u}-${v}`, String(u), String(v), {
           type: "default",
           markerEnd: undefined,
           markerStart: undefined,
@@ -165,7 +121,7 @@ function buildNodesAndEdges(
     }
     for (const e of directedEdges) {
       edges.push(
-        addEdgeWithHandles(`dir-${e._from}-${e.to}`, String(e._from), String(e.to), {
+        addEdge(`dir-${e._from}-${e.to}`, String(e._from), String(e.to), {
           type: "default",
           animated: true,
           className: "edge-directed-animated",
@@ -182,7 +138,7 @@ function buildNodesAndEdges(
   } else {
     for (const [u, v] of graph.edges) {
       edges.push(
-        addEdgeWithHandles(`undir-${u}-${v}`, String(u), String(v), {
+        addEdge(`undir-${u}-${v}`, String(u), String(v), {
           type: "default",
           markerEnd: undefined,
           markerStart: undefined,

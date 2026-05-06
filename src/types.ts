@@ -17,9 +17,12 @@ export type OptimizeSmallWorldResponse = {
 };
 
 // 파싱된 그래프
+export type NodePositions = Record<number, { x: number; y: number }>;
+
 export type ParsedGraph = {
   vertices: number[];
   edges: [number, number][];
+  positions?: NodePositions;
 };
 
 export type ApiTarget = "mr2s" | "raw-sa" | "brute-force";
