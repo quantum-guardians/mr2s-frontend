@@ -8,7 +8,6 @@ import { BenchmarkPanel } from "./components/BenchmarkPanel.tsx";
 import { SimulationPage } from "./components/SimulationPage.tsx";
 import { validateAndParse } from "./utils/validation.ts";
 import { generateRandomPlanarGraph } from "./utils/planarGraph.ts";
-import { generateGraphFromBackend } from "./graphApi.ts";
 import { optimizeSmallWorld, runBenchmark } from "./api.ts";
 import type {
   ParsedGraph,
@@ -130,12 +129,7 @@ export default function App() {
     setBenchmarkProgress(t("benchmarkPanel.generating"));
     setError(null);
     try {
-      let graph: ParsedGraph;
-      try {
-        graph = await generateGraphFromBackend(nodeCount);
-      } catch {
-        graph = generateRandomPlanarGraph(nodeCount);
-      }
+      const graph = generateRandomPlanarGraph(nodeCount);
       setBenchmarkGraph(graph);
       setParsedGraph(graph);
       setOptimizationResult(null);

@@ -1,9 +1,12 @@
 import type { ParsedGraph } from "../types.ts";
+import { optimizeLayout, type LayoutGraph } from "./planarLayout.ts";
 
 /**
  * Generates a random planar graph using Delaunay triangulation.
  * Points are placed randomly in a 2D plane, then triangulated
  * to guarantee planarity and connectivity.
+ * Optionally removes edges to control density, then applies
+ * force-directed layout optimization.
  */
 export function generateRandomPlanarGraph(nodeCount: number): ParsedGraph {
   if (nodeCount < 3) {
@@ -20,14 +23,96 @@ export function generateRandomPlanarGraph(nodeCount: number): ParsedGraph {
     addEdge(edgeSet, a, c);
   }
 
-  const vertices = Array.from({ length: nodeCount }, (_, i) => i + 1);
-  const edges: [number, number][] = [];
+  // Build 0-indexed edge list and adjacency
+  const edges0: [number, number][] = [];
   for (const key of edgeSet) {
     const [u, v] = key.split(",").map(Number);
-    edges.push([u + 1, v + 1]);
+    edges0.push([u, v]);
   }
 
-  return { vertices, edges };
+  // Remove edges to 65-75% density while keeping connectivity and min degree 2
+  const maxEdges = 3 * nodeCount - 6;
+  const targetEdges = Math.max(
+    nodeCount,
+    Math.floor(maxEdges * (0.65 + Math.random() * 0.1)),
+  );
+  const reduced = removeEdges(edges0, nodeCount, targetEdges);
+
+  // Apply force-directed layout using Delaunay positions as initial
+  const layoutInput: LayoutGraph = {
+    n: nodeCount,
+    edges: reduced,
+    positions: points,
+  };
+  const laid = optimizeLayout(layoutInput);
+
+  // Convert to 1-indexed ParsedGraph with positions
+  const SCALE = 6;
+  const vertices = Array.from({ length: nodeCount }, (_, i) => i + 1);
+  const edges: [number, number][] = reduced.map(([u, v]) => [u + 1, v + 1]);
+  const positions: Record<number, { x: number; y: number }> = {};
+  for (let i = 0; i < nodeCount; i++) {
+    positions[i + 1] = { x: laid.positions[i][0] * SCALE, y: laid.positions[i][1] * SCALE };
+  }
+
+  return { vertices, edges, positions };
+}
+
+function removeEdges(
+  edges: [number, number][],
+  n: number,
+  target: number,
+): [number, number][] {
+  if (edges.length <= target) return edges;
+
+  const adj = Array.from({ length: n }, () => new Set<number>());
+  for (const [u, v] of edges) {
+    adj[u].add(v);
+    adj[v].add(u);
+  }
+
+  const shuffled = [...edges];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  const result = new Set(edges.map(([u, v]) => `${u},${v}`));
+
+  for (const [u, v] of shuffled) {
+    if (result.size <= target) break;
+    if (adj[u].size <= 2 || adj[v].size <= 2) continue;
+    // Check connectivity: would removing this edge disconnect?
+    adj[u].delete(v);
+    adj[v].delete(u);
+    if (isConnected(adj, n)) {
+      result.delete(`${u},${v}`);
+    } else {
+      adj[u].add(v);
+      adj[v].add(u);
+    }
+  }
+
+  return [...result].map((k) => {
+    const [u, v] = k.split(",").map(Number);
+    return [u, v];
+  });
+}
+
+function isConnected(adj: Set<number>[], n: number): boolean {
+  const visited = new Set<number>();
+  const stack = [0];
+  visited.add(0);
+  while (stack.length > 0) {
+    const v = stack.pop()!;
+    for (const u of adj[v]) {
+      if (!visited.has(u)) {
+        visited.add(u);
+        stack.push(u);
+      }
+    }
+  }
+  return visited.size === n;
 }
 
 function addEdge(set: Set<string>, a: number, b: number) {
