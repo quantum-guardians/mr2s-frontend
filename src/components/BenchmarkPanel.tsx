@@ -9,9 +9,9 @@ type BenchmarkPanelProps = {
 };
 
 const APPROACH_LABELS: Record<string, string> = {
-  "mr2s": "MR2S",
-  "raw-sa": "Raw",
-  "brute-force": "Bruteforce",
+  "qubo": "QUBO",
+  "raw-sa": "Raw SA",
+  "robin": "Robin",
 };
 
 export function BenchmarkPanel({ result, loading, graph }: BenchmarkPanelProps) {

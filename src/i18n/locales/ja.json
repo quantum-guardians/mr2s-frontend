@@ -18,6 +18,11 @@
   "graphInput": {
     "title": "グラフ入力",
     "apiSelection": "API 選択",
+    "solverHint": {
+      "qubo": "グラフを分割し、各部分を QUBO + 焼きなましで解く",
+      "rawSa": "APSP とフロー指標を直接評価して辺の向きを焼きなます",
+      "robin": "DFS 1回で全辺の向きを確定。最速だが橋のないグラフが必要"
+    },
     "vertices": "頂点（コンマ区切り）",
     "verticesPlaceholder": "例: 1,2,3,4,5",
     "edges": "辺（1行に1つ、スペースまたはコンマ区切り）",

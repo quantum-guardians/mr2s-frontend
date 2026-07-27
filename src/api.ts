@@ -8,9 +8,9 @@ import type {
 import { UNREACHABLE_SCORE } from "./types.ts";
 
 const API_URLS: Record<ApiTarget, string> = {
-  "mr2s": "/api/v1/mr2s",
-  "raw-sa": "/api/v1/raw-sa",
-  "brute-force": "/api/v1/brute-force",
+  "qubo": "/api/v2/solvers/qubo",
+  "raw-sa": "/api/v2/solvers/raw-sa",
+  "robin": "/api/v2/solvers/robin",
 };
 
 export class ApiTimeoutError extends Error {
@@ -55,7 +55,7 @@ export async function optimizeSmallWorld(
 }
 
 const BENCHMARK_ITERATIONS = 10;
-const ALL_TARGETS: ApiTarget[] = ["mr2s", "raw-sa", "brute-force"];
+const ALL_TARGETS: ApiTarget[] = ["qubo", "raw-sa", "robin"];
 
 function calcWeightBalance(edges: OptimizeSmallWorldResponse["edges"]): number {
   const inW: Record<number, number> = {};

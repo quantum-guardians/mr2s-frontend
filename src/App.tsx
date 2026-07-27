@@ -31,7 +31,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasDrawn, setHasDrawn] = useState(false);
-  const [apiTarget, setApiTarget] = useState<ApiTarget>("mr2s");
+  const [apiTarget, setApiTarget] = useState<ApiTarget>("qubo");
   const [benchmarkResult, setBenchmarkResult] =
     useState<BenchmarkResult | null>(null);
   const [benchmarkGraph, setBenchmarkGraph] = useState<ParsedGraph | null>(null);
@@ -139,9 +139,9 @@ export default function App() {
 
       const result = await runBenchmark(graph, (target, iteration) => {
         const labels: Record<string, string> = {
-          "mr2s": "MR2S",
-          "raw-sa": "Raw",
-          "brute-force": "Bruteforce",
+          "qubo": "QUBO",
+          "raw-sa": "Raw SA",
+          "robin": "Robin",
         };
         setBenchmarkProgress(`${labels[target]} ${iteration}/10...`);
       });

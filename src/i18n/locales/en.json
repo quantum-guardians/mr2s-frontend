@@ -18,6 +18,11 @@
   "graphInput": {
     "title": "Graph Input",
     "apiSelection": "API Selection",
+    "solverHint": {
+      "qubo": "Partitions the graph, solves each part as a QUBO with simulated annealing",
+      "rawSa": "Anneals edge directions directly against APSP and flow metrics",
+      "robin": "One DFS pass orients every edge; fastest, but needs a bridgeless graph"
+    },
     "vertices": "Vertices (comma-separated)",
     "verticesPlaceholder": "e.g. 1,2,3,4,5",
     "edges": "Edges (one per line, space or comma-separated)",

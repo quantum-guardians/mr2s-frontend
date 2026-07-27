@@ -18,6 +18,11 @@
   "graphInput": {
     "title": "그래프 입력",
     "apiSelection": "API 선택",
+    "solverHint": {
+      "qubo": "그래프를 분할해 각 부분을 QUBO + 시뮬레이티드 어닐링으로 계산",
+      "rawSa": "APSP와 흐름 지표를 직접 평가하며 간선 방향을 어닐링",
+      "robin": "DFS 한 번으로 전체 간선 방향 확정. 가장 빠르지만 브릿지 없는 그래프에서만 가능"
+    },
     "vertices": "정점 (쉼표로 구분)",
     "verticesPlaceholder": "예: 1,2,3,4,5",
     "edges": "간선 (한 줄에 하나씩, 띄어쓰기 또는 쉼표)",
