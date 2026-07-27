@@ -51,17 +51,17 @@ export function GraphInput({
       <div className="field">
         <label>{t("graphInput.apiSelection")}</label>
         <div className="api-toggle">
-          <label>
+          <label title={t("graphInput.solverHint.qubo")}>
             <input
               type="radio"
               name="api-target"
-              value="mr2s"
-              checked={apiTarget === "mr2s"}
+              value="qubo"
+              checked={apiTarget === "qubo"}
               onChange={(e) => onApiTargetChange(e.target.value as ApiTarget)}
             />
-            MR2S
+            QUBO
           </label>
-          <label>
+          <label title={t("graphInput.solverHint.rawSa")}>
             <input
               type="radio"
               name="api-target"
@@ -69,17 +69,17 @@ export function GraphInput({
               checked={apiTarget === "raw-sa"}
               onChange={(e) => onApiTargetChange(e.target.value as ApiTarget)}
             />
-            Raw
+            Raw SA
           </label>
-          <label>
+          <label title={t("graphInput.solverHint.robin")}>
             <input
               type="radio"
               name="api-target"
-              value="brute-force"
-              checked={apiTarget === "brute-force"}
+              value="robin"
+              checked={apiTarget === "robin"}
               onChange={(e) => onApiTargetChange(e.target.value as ApiTarget)}
             />
-            Bruteforce
+            Robin
           </label>
         </div>
       </div>

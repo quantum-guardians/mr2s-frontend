@@ -25,7 +25,8 @@ export type ParsedGraph = {
   positions?: NodePositions;
 };
 
-export type ApiTarget = "mr2s" | "raw-sa" | "brute-force";
+/** Solver names of the backend catalog: POST /api/v2/solvers/{solver}. */
+export type ApiTarget = "qubo" | "raw-sa" | "robin";
 
 /** Sentinel value returned by the API when a node is unreachable. */
 export const UNREACHABLE_SCORE = -1;
